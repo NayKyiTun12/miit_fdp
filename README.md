@@ -167,7 +167,7 @@ Synthesis results:
 
 ![image](https://user-images.githubusercontent.com/123365842/214761406-6f05f05d-fc24-4a06-9f1e-96fb50ca203a.png)
 
-Optimization
+# Optimization
 
 Let's Consider the following design where the 3 bit input is multiplied by 2 and the output is a 4 bit value.
 
@@ -185,7 +185,8 @@ module mult8 (input [2:0] a , output [5:0] y);
 	assign y = a* 9;
 endmodule
 
-![image](https://user-images.githubusercontent.com/123365842/214761627-c75ec74a-9e0b-40c2-92ea-ef89c33d7660.png)
+![image](https://user-images.githubusercontent.com/123365842/214765290-d0e1f62d-6aa1-4734-b21e-112214b8ff1d.png)
+
 
 
 
