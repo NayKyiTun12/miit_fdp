@@ -374,7 +374,97 @@ write_verilog -noattr dff_const1_netlist.v
 
 show
 
-![image](https://user-images.githubusercontent.com/123365842/214767527-a6bd82eb-ccf2-4453-835d-79f66732e663.png)
+![image](https://user-images.githubusercontent.com/123365842/214768006-01cd03be-d4a6-42db-859b-ed4c7a24f491.png)
+
+
+Example 2 : dff_const2.v
+
+module dff_const2(input clk, input reset, output reg q);
+
+always @(posedge clk, posedge reset)
+
+begin
+
+	if(reset)
+	
+		q <= 1'b1;
+		
+	else
+	
+		q <= 1'b1;
+		
+end
+
+endmodule
+
+Here, Regardless of the inputs, the output q always remains constant at 1 .
+
+This is observed by simulating the design in verilog, and viewing the VCD with GTKWave as follows
+
+![image](https://user-images.githubusercontent.com/123365842/214767853-c2540852-2166-4838-953e-83539eef3716.png)
+
+Since the output is always constant ie Q=1, it can easily be optimised during synthesis.
+
+![image](https://user-images.githubusercontent.com/123365842/214768066-d9c975c3-0f13-4d76-954c-f4f2836c2d36.png)
+
+Example 3 : dff_const3.v
+
+module dff_const3(input clk, input reset, output reg q);
+
+reg q1;
+
+always @(posedge clk, posedge reset)
+
+begin
+	if(reset)
+	
+	begin
+	
+		q <= 1'b1;
+		
+		q1 <= 1'b0;
+		
+	end
+	
+	else
+	
+	begin 
+	
+		q1 <= 1'b1;
+		
+		q <= q1;
+		
+	end
+	
+end
+
+endmodule
+
+When reset goes from 1 to 0,Q1 follows D at the next positive clock edge in an ideal ckt. But in reality, Q1 becomes 1 a little after the next positive clk edge(once reset has been made 0)due to Clock-to-Q delay.
+
+Thus, q takes the value 0 until the next clock edge when it read an input of 1 from q1. This is confirmed with the simulated waveform below.
+
+![image](https://user-images.githubusercontent.com/123365842/214768230-8044bc63-6d1f-4097-9680-915779f4b591.png)
+
+Since Q takes both logic 0 and 1 values in different clock cycles. It is wrong to say that Q=!(reset) or Q=Q1
+
+Hence, both the flip-flops are retained and no optimisations are performed on this design. We can confirm this using Yosys as shown below.
+
+![image](https://user-images.githubusercontent.com/123365842/214768338-ddf0f0df-b514-4ea6-adeb-f9a3a17264c4.png)
+
+Example 4: dff_const4.v
+
+RTL Code:
+
+![image](https://user-images.githubusercontent.com/123365842/214768419-7737d25e-c640-4973-9dd8-47a82cc9c056.png)
+
+Here, regardless of the input whether reset or not , Q1 is always going to be constant i.e. Q1=1 . As q can only be 1 or q1 depending on the reset input , but q1 = 1 .Thus q is also constant at the value 1. We can confirm this with the simulated waveforms as shown below.
+
+![image](https://user-images.githubusercontent.com/123365842/214768439-7ced8c97-0c27-41ed-b713-dd529440e5c9.png)
+
+
+![image](https://user-images.githubusercontent.com/123365842/214768459-fc831127-1af6-4293-b53d-467454515b69.png)
+
 
 
 
