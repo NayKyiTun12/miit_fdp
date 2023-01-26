@@ -326,7 +326,56 @@ While synthesizing this in yosys we use flatten before opt_clean -purge. The mul
 
 ![image](https://user-images.githubusercontent.com/123365842/214767017-5186ae4e-3705-4130-b579-349f44ce27c9.png)
 
+![image](https://user-images.githubusercontent.com/123365842/214767299-03edbb15-8925-4204-9317-34f458ada457.png)
+
+![image](https://user-images.githubusercontent.com/123365842/214767318-31609456-5f55-4587-bad8-0463a0499ede.png)
+
+
 # Sequential Logic Optimisations
+
+All the optimisation examples are in files dff_const2.v,dff_const3.v,dffconst4.v and dff_const5.v. All of these files are under the verilog_files directory.
+
+Example 1: dff_const1.v
+
+module dff_const1(input clk, input reset, output reg q);
+
+always @(posedge clk, posedge reset)
+
+begin
+	if(reset)
+	
+		q <= 1'b0;
+		
+	else
+	
+		q <= 1'b1;
+		
+end
+
+endmodule
+
+Here, it appears that the output Q should be equal to an inverted reset or Q=!reset. However, as the reset is synchronous,even if the flop has D pinned to logic 1,when reset becomes 0, Q does not immediately goto 1. It waits untill the positive edge of the next clock cycle.
+
+This is observed by simulating the design in verilog, and viewing the VCD with GTKWave as follows
+
+![image](https://user-images.githubusercontent.com/123365842/214767385-f3e2ced8-b5ab-4692-b4c0-8bf22bad4211.png)
+
+Observation : In the gtk waveform above , when reset becomes 0, Q becomes 1 at the next clock edge. Since Q can be either 1 or 0,we do not get a sequential constant, and no optimisations should be possible here. We verify it using Yosys synthesis and optimisation.
+
+dfflibmao -liberty ../my_lib/lib/sky130_fd_sc_hd_tt_025C_1v80.lib
+
+dfflibmap is a switch that tells the synthesizer about the library to pick sequential circuits( mainly Dff's and latches) from.
+
+We then generate the netlist
+
+abc -liberty ../my_lib/lib/sky130_fd_sc_hd_tt_025C_1v80.lib 
+
+write_verilog -noattr dff_const1_netlist.v 
+
+show
+
+![image](https://user-images.githubusercontent.com/123365842/214767527-a6bd82eb-ccf2-4453-835d-79f66732e663.png)
+
 
 
 
