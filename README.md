@@ -466,6 +466,208 @@ Here, regardless of the input whether reset or not , Q1 is always going to be co
 
 ![image](https://user-images.githubusercontent.com/123365842/214768459-fc831127-1af6-4293-b53d-467454515b69.png)
 
+# Day 4: Gate Level Simulations,Blocking vs Non Blocking assignments,Synthesis-Simulation Mismatch
+
+# Introduction to Gate Level Simulations
+
+# Synthesis Simulation Mismatches
+
+
+    Missing sensitivity list
+    Blocking and non blocking statements
+    
+# Missing sensitivity list
+
+Simulator functions on the basis of activity that is it looks for if either of the inputs change. If there is no change in the inputs the simulator won't evaluate the output at all.
+
+Example:
+
+module mux(input i0, input i1, input sel, output reg y);
+
+always @(sel)
+begin
+	if (sel)
+	begin
+		y = i1;
+	end
+	else
+	begin
+		y = i0;
+	end
+end
+endmodule
+
+# Blocking and non blocking statements 
+
+    Blocking Executes the statements in the order it is written So the first statement is evaluated before the second statement
+    Non Blocking Executes all the RHS when always block is entered and assigns to LHS. Parallel evaluation
+
+# Example of Blocking assignments:
+
+module shift_register(input clk, input reset, input d, output reg q1);
+reg q0;
+
+always @(posedge clk,posedge reset)
+begin
+	if(reset)
+	begin
+		q0 = 1'b0;
+		q1 = 1'b0;
+	end
+	else
+	begin
+		q0 = d;
+		q1 = q0;
+	end
+end
+endmodule
+
+D is assigned to Qo not which is then assigned to Q. Due to optimisation a single latch is formed where Q is equal to D.
+
+Example of Non-Blocking assignments:
+
+In the above RTL code if
+
+      begin
+		q0 <= d;
+		q1 <= q0;
+      end
+      
+The non blocking assignments all the RHS are evaluated and parallel assigned to lhs irrespective. So, always get a two flop shift register.
+
+Therefore, always use non blocking statements for writing sequential circuits.
+
+Other example:
+
+module comblogic(input a, input b, input c, output reg y);
+reg q0;
+
+always @(*)
+begin
+	y = q0 & c;
+	q0 = a|b;
+end
+endmodule
+
+# Labs on GLS and Synthesis-Simulation Mismatch
+
+Example 1: A mux designed with the help of ternary operator
+
+module ternary_operator_mux (input i0 , input i1 , input sel , output y);
+	assign y = sel?i1:i0;
+endmodule
+
+The synthesized netlist for the above,using yosys
+
+Write this command "vim ternary_operator_mux.v –o bad_mux.v –o good_mux.v"
+
+"iverlog ternary_operator_mux.v tb_ternary_operator_mux.v"
+
+"./a.out"
+
+"gtkwave ternary_operator_mux.v"
+
+![image](https://user-images.githubusercontent.com/123365842/214830927-9c8d46aa-2997-498a-85dd-06ff504be32c.png)
+
+To invoke GLS,
+
+    We need to read our netlist file and the test bench file assosciated with it.
+    We need to read 2 extra files that contain the description of verilog models in the netlist.
+
+Write the command "iverilog ../my_lib/verilog_model/primitives.v ../my_lib/verilog_model/sky130_fd_sc_hd.v ternary_operator_mux_net.v tb_ternary_operator_mux.v"
+
+# ![image](https://user-images.githubusercontent.com/123365842/214831563-36bd2ece-05b7-4fa0-8d1b-bfff653ffd07.png)
+
+To see the waveform of RTL simulation,the following commands is 
+
+![image](https://user-images.githubusercontent.com/123365842/214831843-b6c38c10-b210-4539-a63d-667395b2adeb.png)
+
+The generated netlist does behave like a 2X1 multiplexer.
+
+Example 2:
+
+module bad_mux (input i0 , input i1 , input sel , output reg y);
+always @(sel)
+begin
+	if(sel)
+		y <= i1;
+	else
+		y <= i0;
+end 
+endmodule
+
+This is verified by GTKWAVE of RTL Simulation below :
+
+Write this command "vim bad_mux.v"
+
+"iverlog bad_mux.v tb_bad_mux.v"
+
+"./a.out"
+
+"gtkwave bad_mux.v"
+
+![image](https://user-images.githubusercontent.com/123365842/214873761-489c3e5a-0c85-47cd-a9f1-5387dff794a6.png)
+
+The design simulates a latch rather than a 2x1 mux.
+But the Yosys implementation shows a 2X1 mux .
+
+![image](https://user-images.githubusercontent.com/123365842/214874310-ae69757c-5030-49e9-9cd3-3611accf08ee.png)
+
+Write the command "show"
+
+![image](https://user-images.githubusercontent.com/123365842/214874710-938fb98c-87f6-4413-a25d-a626272407c8.png)
+
+Example 3: This is an example of synthesis-simulation mismatch due to wrong order of assignment in blocking assignments.
+
+module blocking_caveat (input a , input b , input c , output reg d);
+reg x;
+
+always @(*)
+begin
+	d = x & c;
+	x = a | b;
+end 
+endmodule
+
+
+Write this command "vim blocking_caveat.v"
+
+"iverlog blocking_caveat.v tb_blocking_caveat.v"
+
+"./a.out"
+
+"gtkwave bad_mux.v"
+
+![image](https://user-images.githubusercontent.com/123365842/214875258-3d5456a2-96d3-403e-ae2b-6deec9f69adb.png)
+
+
+![image](https://user-images.githubusercontent.com/123365842/214875575-599546e3-b79b-418a-bf48-b2cdb7fed3b3.png)
+
+the inputs a b or C changes but D is assigned with old X value since it is using the value of the previous Tclk ,the simulator mimics a delay or a flop. Where as, during synthesis we see the the OR and AND gates
+
+Write the command "show"
+
+![image](https://user-images.githubusercontent.com/123365842/214876066-86ce53aa-64dc-4025-b7f6-cc7e7462532d.png)
+
+
+![image](https://user-images.githubusercontent.com/123365842/214876154-a7fe370e-4a3d-4883-879e-9d4850bc50ba.png)
+
+Where both the inputs a and b are 0. a | b should output 0, which when ANDed with c, should give an output y of 0. The output y thus should hold the value 0. Instead,it holds the value 1 .
+
+The netlist representation on synthesis yields
+
+![image](https://user-images.githubusercontent.com/123365842/214876212-9b35d984-8b33-436e-a373-9b5bf396f4d3.png)
+
+Here , the circuit behaves as intended combinational ckt. 
+
+Output d results from the present value of inputs, and not the previous clock values like in the simulation results. 
+
+SO, the waveforms of the stimulated RTL verilog code do not match with the gate level simulation of generated netlist,we get a Synthesis-Simulation Mismatch again.
+
+
+
+
+
 
 
 
