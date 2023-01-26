@@ -187,7 +187,146 @@ endmodule
 
 ![image](https://user-images.githubusercontent.com/123365842/214765290-d0e1f62d-6aa1-4734-b21e-112214b8ff1d.png)
 
+# DAY 3 : Combinational and Sequential Optimisations
 
+Inorder to produce a digital circuit design which is optimised interms of area and power, the simulator performs many types of optimisations on the combinational and sequential circuits.
+
+1.Combinational optimisation methods:
+
+    Squezzing the logic to get the most optimised design
+        -Area and Power savings
+    Constant propogation
+        -Direct Optimisation
+    Boolean Logic Optimisation
+        -K-map
+        -Quine-mckluskey Algorithm
+
+2.Sequential optimisation methods:
+
+    Basic
+        -Sequential constant Propogation
+    Advanced
+        State Optimisation
+            -Retiming
+            -Sequential Logic Cloning (Floor Plan Aware Synthesis)
+	    
+# Combinational Logic Optimisations
+
+All the optimisation examples are in files opt_check.v, opt_check4.v, and multiple_modules_opt.v. All of these files are present under the verilog_files directory.
+
+Example 1:
+
+opt_check.v
+
+module opt_check (input a, input b , output y);
+
+	assign y = a?b:0;
+	
+endmodule
+
+Ideally ,the above ternary operator should give us a mux. But the constant 0 propagates further in the logic .Using boolean simplification we obtain y = ab.
+
+Synthesizing this in yosys :
+
+Before realising the netlist, we must issue a command to yosys to perform optimisations. It removes all unused cells and wires to prduce optimised digital circuit.This can be done using the opt_clean -purge command as shown below.
+
+![image](https://user-images.githubusercontent.com/123365842/214765869-e7a2da88-cb98-40be-8dcd-11f0557794d5.png)
+
+Next,
+
+ abc -liberty ../my_lib/lib/sky130_fd_sc_hd_tt_025C_1v80.lib  
+ 
+ write_verilog -noattr opt_check_netlist.v 
+ 
+ show
+
+On viewing the graphical synthesis realisation , we can see the Yosys has synthesized an AND gate as expected.
+
+![image](https://user-images.githubusercontent.com/123365842/214766003-cf358a0d-2de7-4795-bd83-45663a6982db.png)
+
+Example 2:
+
+opt_check2.v
+
+module opt_check2 (input a, input b , output y);
+
+	assign y = a?1:b;
+	
+endmodule
+
+After simplification,we expect the output y to be an OR gate, since the output of the mux can be simplified to y = a + b. If we generate the netlist and look at its graphical representation , we get
+
+![image](https://user-images.githubusercontent.com/123365842/214766541-1bfe8c87-dbb8-4b04-b0e0-5cecb6bec1ff.png)
+
+![image](https://user-images.githubusercontent.com/123365842/214766600-c80570b9-0762-4af1-b5d2-4e5a7ffd86c5.png)
+
+Example 3: opt_check3.v
+
+module opt_check3 (input a, input b , input c , output y);
+
+	assign y = a?(c?b:0):0;
+	
+endmodule
+
+For the RTL verilog code of opt_check3.v , we expect the output to be a 3 input AND gate based on constant propagation and boolean logic optimisation.The output y can be simplified to y = abc.
+
+![image](https://user-images.githubusercontent.com/123365842/214766668-8a8b85aa-b2f8-4065-b967-1a205577b775.png)
+
+Next we generate the netlist and observe its graphical representation after synthesis
+
+![image](https://user-images.githubusercontent.com/123365842/214766701-2faa8e0a-8cbb-4ca6-946a-67d37e96a97c.png)
+
+Example 4:opt_check4.v
+
+module opt_check4 (input a, input b , input c , output y);
+
+	assign y = a?(b?(a & c):c):(!c);
+	
+endmodule
+
+![image](https://user-images.githubusercontent.com/123365842/214766766-3f4ea177-37fb-404f-ac6c-41bf6be508a1.png)
+
+
+In this case,the boolean logic optimisation simplifies the output to a single xnor gate i.e. y = a xnor c. Next we generate the netlist and observe its graphical representation after synthesis
+
+![image](https://user-images.githubusercontent.com/123365842/214766785-b593f268-f5b9-482f-92b7-66e3105cf7e0.png)
+
+Example 5:multiple_module_opt.v
+
+module sub_module1(input a , input b , output y);
+
+	assign y = a & b;
+	
+endmodule
+
+module sub_module2(input a , input b , output y);
+
+	assign y = a^b;
+	
+endmodule
+
+module multiple_module_opt(input a , input b , input c , input d , output y);
+
+wire n1, n2, n3;
+
+
+sub_module1 U1 (.a(a), .b(1'b1), .y(n1));
+
+sub_module2 U2 (.a(n1), .b(1'b0), .y(n2));
+
+sub_module2 U3 (.a(b),  .b(d), .y(n3));
+
+assign y =c | (b & n1);
+
+endmodule
+
+![image](https://user-images.githubusercontent.com/123365842/214766931-4fa18c5f-60e4-4d25-b702-51766e948ea1.png)
+
+While synthesizing this in yosys we use flatten before opt_clean -purge. The multiple_module_opt instantiates both submodule1 and 2. We must use Flat Synthesis here otherwise the optimisations will not be performed on the sub module level.
+
+![image](https://user-images.githubusercontent.com/123365842/214767017-5186ae4e-3705-4130-b579-349f44ce27c9.png)
+
+# Sequential Logic Optimisations
 
 
 
