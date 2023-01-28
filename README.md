@@ -993,7 +993,7 @@ endmodule
 In gtkwaveform of RTL simulation:
 
 
-Write the following the command in the verilog file: "iverilog bad_mux.v tb_bad_mux.v"
+Write the following the command in the verilog file: "iverilog bad_case.v tb_bad_case.v"
 
 ![image](https://user-images.githubusercontent.com/123365842/215267554-21e5665d-6766-4214-bedd-90cd5fe836a2.png)
 
@@ -1002,9 +1002,9 @@ Observation : When sel[1:0]=11, the output neither follows i2 nor i3. It simply 
 
 Whereas while running GLS on the netlist,the waveform of the synthesized netlist behaves as 4X1 mux as shown below
 
-Write the following the command in the verilog file: "iverlog ../my_lib/verilog_model/primitives.v ../my-lib/verilog_model/sky .... bad_mux.v tb_bad_mux.v"
+Write the following the command in the verilog file: "iverlog ../my_lib/verilog_model/primitives.v ../my-lib/verilog_model/sky .... bad_case.v tb_bad_case.v"
 
-![image](https://user-images.githubusercontent.com/123365842/215268125-9d26e25a-9727-41a3-88ed-cd3c7ce4d0d9.png)
+![image](https://user-images.githubusercontent.com/123365842/215269294-bb402b0a-0718-4de7-96c7-e5c1eef6cbb9.png)
 
 
 
@@ -1075,6 +1075,7 @@ The 4 inputs get assigned to a the internal 4 bit bus named i_int.
 
 The gtkwave obtained after the simulation
 
+![image](https://user-images.githubusercontent.com/123365842/215269367-a2f2c9e1-6c3d-494f-a55d-18894f40cf16.png)
 
 
 Example 2:
