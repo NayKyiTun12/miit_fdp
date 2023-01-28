@@ -1101,7 +1101,8 @@ Write the following the command in the verilog file: "iverlog comp_case.v tb_com
 
 The above code has good readabilty,scalability and easy to write as well. Let's verify if it functions as a 8X1 demux as expected by viewing its gtkwave simulated waveform.
 
-![image](https://user-images.githubusercontent.com/123365842/215264405-6618aafc-d7c6-44c8-b2ad-981e4e2cffc3.png)
+![image](https://user-images.githubusercontent.com/123365842/215272484-b00abe39-c792-47c9-b71b-6cdf4a4ccb7c.png)
+
 
 # FOR Generate and its Uses
 
