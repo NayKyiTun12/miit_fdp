@@ -992,20 +992,21 @@ endmodule
 
 In gtkwaveform of RTL simulation:
 
-![image](https://user-images.githubusercontent.com/123365842/215267526-81197ba4-20c6-4a52-b486-3d80ee778320.png)
+
+Write the following the command in the verilog file: "iverilog bad_mux.v tb_bad_mux.v"
+
 ![image](https://user-images.githubusercontent.com/123365842/215267554-21e5665d-6766-4214-bedd-90cd5fe836a2.png)
-
-
-
-Write the following the command in the verilog file: "iverlog ../my_lib/verilog_model/primitives.v ../my-lib/verilog_model/sky .... partial_case_assign.v tb_partial_case_assign.v"
-
 
 
 Observation : When sel[1:0]=11, the output neither follows i2 nor i3. It simply latches to 1.
 
 Whereas while running GLS on the netlist,the waveform of the synthesized netlist behaves as 4X1 mux as shown below
 
-![image](https://user-images.githubusercontent.com/123365842/215264206-a9b79129-869a-45c1-9aa1-893bddce9337.png)
+Write the following the command in the verilog file: "iverlog ../my_lib/verilog_model/primitives.v ../my-lib/verilog_model/sky .... bad_mux.v tb_bad_mux.v"
+
+![image](https://user-images.githubusercontent.com/123365842/215268125-9d26e25a-9727-41a3-88ed-cd3c7ce4d0d9.png)
+
+
 
 Thus ,Overlapping cases confuse the simulator and leads to Synthesis-Simulation Mismatches.
 
