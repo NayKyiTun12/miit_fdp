@@ -992,9 +992,14 @@ endmodule
 
 In gtkwaveform of RTL simulation:
 
+![image](https://user-images.githubusercontent.com/123365842/215267526-81197ba4-20c6-4a52-b486-3d80ee778320.png)
+![image](https://user-images.githubusercontent.com/123365842/215267554-21e5665d-6766-4214-bedd-90cd5fe836a2.png)
+
+
+
 Write the following the command in the verilog file: "iverlog ../my_lib/verilog_model/primitives.v ../my-lib/verilog_model/sky .... partial_case_assign.v tb_partial_case_assign.v"
 
-![image](https://user-images.githubusercontent.com/123365842/215264160-dfb1ab05-ea1f-4796-97ae-e156dd3c9f15.png)
+
 
 Observation : When sel[1:0]=11, the output neither follows i2 nor i3. It simply latches to 1.
 
