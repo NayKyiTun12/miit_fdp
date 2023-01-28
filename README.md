@@ -1075,7 +1075,6 @@ The 4 inputs get assigned to a the internal 4 bit bus named i_int.
 
 The gtkwave obtained after the simulation
 
-![image](https://user-images.githubusercontent.com/123365842/215268708-54cca878-030b-4f8f-8581-702083012ea0.png)
 
 
 Example 2:
