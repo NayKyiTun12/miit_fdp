@@ -970,6 +970,7 @@ Yosys implementation of the above design after synthesis,
 
 Write the following the command in the yosus terminal:"read_liberty -lib ../lib/sky...."
 
+![image](https://user-images.githubusercontent.com/123365842/215267015-fd27bda4-a442-4423-99b8-63a0c0e9b8fa.png)
 
 
 As expected, Only 1 D latch is inferred for X. No latch is inferred for y.
