@@ -1149,7 +1149,8 @@ gtkwave tb_rca.v
 
 the resulting gtkwaveform is shown below that shows an adder being simulated:
 
-![image](https://user-images.githubusercontent.com/123365842/215264475-f0f098d5-70e2-44fd-80d1-f4db010c40a8.png)
+![image](https://user-images.githubusercontent.com/123365842/215273394-8bd5e14e-c3d9-47d3-b0a1-eb64e3a24858.png)
+
 
 Takeaways from this workshop:
 
