@@ -1159,4 +1159,75 @@ Takeaways from this workshop:
     We learnt to synthesize the rtl verilog design using yosys and understand how the synthesizer implements the logic considering area and delay optimisations
     We learnt to verify the simulation -synthesis results by feeding netlist+testbench+Gate verilog models to the iverilog,during GLS(gate level synthesis simulation).
     We learnt good coding practices and ways to write optimised verilog codes.
+    
+    
+    # Day-6
+    
+    # FPGA Fabric Design And Architecture
+    
+    ![image](https://user-images.githubusercontent.com/123365842/215945855-1f0d16fd-72c0-4889-8183-c74d0560c94b.png)
+    
 
+
+   ![image](https://user-images.githubusercontent.com/123365842/215945936-afbb419a-4b05-4ce1-9fce-015a2509b5f9.png)
+   
+   
+   
+   ![image](https://user-images.githubusercontent.com/123365842/215948624-9f18c656-8ed6-49a2-8b4c-f7b2891bb782.png)
+   
+   
+   
+   ![image](https://user-images.githubusercontent.com/123365842/215948699-b83f0ed4-c48d-4d7b-9155-b3cfcedaac1c.png)
+   
+   
+   
+   ![image](https://user-images.githubusercontent.com/123365842/215948877-ad579ff4-b230-49da-8f89-933b50460734.png)
+
+
+
+   ![image](https://user-images.githubusercontent.com/123365842/215948998-65fb0061-1737-458b-bc50-ad477e9c3dfd.png)
+
+
+   
+   ![image](https://user-images.githubusercontent.com/123365842/215949115-9ba5aaa7-c6b8-4120-827d-f62d62a58e0d.png)
+
+
+   
+   ![image](https://user-images.githubusercontent.com/123365842/215949212-0cf08ba4-7f18-4ab1-bb84-58b6725c3740.png)
+    
+    
+   
+   ![image](https://user-images.githubusercontent.com/123365842/215949288-3508cb63-67fe-4ec1-93a5-d8fc9184360d.png)
+
+
+   
+   ![image](https://user-images.githubusercontent.com/123365842/215949479-d1ae0d56-718f-4351-a568-538292f07bfb.png)
+
+
+   
+   ![image](https://user-images.githubusercontent.com/123365842/215949684-71be1966-b7d8-43b2-9831-e9b33e2bf15f.png)
+   
+   
+   
+   ![image](https://user-images.githubusercontent.com/123365842/215950064-8299678d-4df7-4ecd-9c43-b1ef4f056a41.png)
+
+ 
+   
+   ![image](https://user-images.githubusercontent.com/123365842/215950206-76dda99e-bfd0-41b1-a499-a040977882b8.png)
+   
+   
+   # Error1
+   
+   
+   ![image](https://user-images.githubusercontent.com/123365842/215950775-a063a10b-9795-41ec-8072-7c99bb84a06f.png)
+   
+   
+   # Error2
+   
+   
+   ![image](https://user-images.githubusercontent.com/123365842/215951148-f450ac56-f235-4ede-97b4-eca3183b4b70.png)
+
+
+   
+   
+   
