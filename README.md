@@ -1226,6 +1226,367 @@ Takeaways from this workshop:
    
    
    ![image](https://user-images.githubusercontent.com/123365842/215951148-f450ac56-f235-4ede-97b4-eca3183b4b70.png)
+   
+# Day-7
+# Advance Physical Design using OpenLANE/Sky130
+# Day 1 -Inception of open-source EDA, OpenLANE and sky130 PDK
+
+	To perform the intruction, which are given externaly in computers, some hardware is there which convert our external instruction into understandable language of computers. Arduino consists of both a physical programmable circuit board (often referred to as a microcontroller) and a piece of software, or IDE (Integrated Development Environment) that runs on the computer, used to write and upload computer code to the physical board.Basically microcontroller is made from package, inside the package chip is there.Chip is made by pads, core, die and foundary IP's.
+
+![image](https://user-images.githubusercontent.com/123365842/216225495-063556cb-8a79-46e5-a8b4-d3f11ed41031.png)
+
+# Package
+
+The package is a case that surrounds the circuit material to protect it from corrosion or physical damage and allow mounting of the electrical contacts connecting it to the printed circuit board (PCB).
+
+![image](https://user-images.githubusercontent.com/123365842/216225639-e63b3f9c-b3ef-4de0-9ee2-cd49a5ec240c.png)
+
+# Chip
+
+Inside the Package, chip is available which contains, foundary IP's (for example, RISC-V Soc, PLL, ADC, DAC, SRAM, SPD), core (core contains AND, OR etc. all gates and digital logics), pads (through which input and output signals are communicates).
+
+![image](https://user-images.githubusercontent.com/123365842/216225721-122f7b4d-dad5-4481-ab33-6680138ea959.png)
+
+# What is RISC-V?
+
+RISC-V, where five refers to the number of generations of RISC architecture that were developed at the University of California, Berkeley. RISC is an open standard instruction set architecture (ISA) based on established RISC principles. A number of companies are offering or have announced RISC-V hardware, open source operating systems with RISC-V support are available, and the instruction set is supported in several popular software toolchains.
+
+The instruction set is designed for a wide range of uses. The base instruction set has a fixed length of 32-bit naturally aligned instructions, and the ISA supports variable length extensions where each instruction can be any number of 16-bit parcels in length. The instruction set specification defines 32-bit and 64-bit address space variants. The specification includes a description of a 128-bit flat address space variant, as an extrapolation of 32 and 64 bit variants, but the 128-bit ISA remains "not frozen" intentionally, because there is yet so little practical experience with such large memory systems.
+
+# How software communicate with Hardware?
+
+Between apps or software (in our mobilephones and computers or laptops) and Hardware (in our mobilephones and computers or laptops), One full channel is there, which contains O.S. (operating system), compiler and assembler. This channel proccesses the inputs from the apps and gives the outputs to the Hardware. And according to the output of assembler, the hardware will perform.
+
+![image](https://user-images.githubusercontent.com/123365842/216226235-be875ef2-5c5a-489d-863c-7d9317a91abe.png)
+
+So, this inputs goes throuth the system software cahnnel, where O.S. handles the input/output operations, it allocates the memory to for the codes and low level systems functions are there in O.S. Then program goes to the compiler, where program will compile and generate the HDL program.This HDL program is basically the sets of Instructions which can hardware is able to understand. The instructions are basically depends on what kind of hardware we are using. For example if we are using Mips processor then instruction formaate will be according to the Mips processor, if Hardware is RISC-V then the instruction formate will be according to the RISC-V and similerly for Arm and intel processors also.
+
+This sets of instrusctions is now given to the Assembler. here according to the instruction set, assembler will generate the Binary code (contains only 0s and 1s). this binary code can be understandable for hardware. And according to this code, hardware will gives the output.
+
+# How to design Digital ASIC?
+
+To design Digital ASIC, few tools or things which are required from the day one. These are
+
+    RTL Design
+
+    EDA tools
+
+    PDK data
+
+# what is RTL design?
+
+In digital circuit design, register-transfer level (RTL) is a design abstraction which models a synchronous digital circuit in terms of the flow of digital signals (data) between hardware registers, and the logical operations performed on those signals.for this designs many open sorces are available. like, librecores.org, opencores.org, github.com, etc...
+
+# What is EDA tools?
+
+The term Electronic Design Automation (EDA) refers to the tools that are used to design and verify integrated circuits (ICs), printed circuit boards (PCBs), and electronic systems, in general. many open sorces tools are available like Qflow, OpenROAD, OpenLANE, etc...
+# What is PDK Data?
+
+PDK is process design kit. It is interface between FAB and design. This data is collections of files like,
+
+    process design rules: DRC, LVS, REX
+
+    Digital standerd cell libreries
+
+    i/o librerirs
+
+    etc.....
+
+which are used to model a fabrication process for the EDA tools used to design an ICs. for example, in 2020, google release the open source PDK for FOSS 130nm production with the skywater technology. But right now it is at cutting age of the 5 nm also. But in many applications, the advance node is not required, and the cost of advanced node is also high as compared to 130nm processors. This 130nm processors are also fast processor. for example,
+
+    intel: P4EE @3.46 GHz(Q4'o4)
+
+    sky130_OSU (single cycle RV32i CPU) pipeline version can achieve more than 1 GHz clock
+
+# Simplified RTL to GDSII flow
+
+![image](https://user-images.githubusercontent.com/123365842/216226635-9d4e88b5-fe21-4107-9fb6-3fb0b37704c9.png)
+
+### Synthesis In the synthesis, the design RTL is translated to a circuit out from the SCL. The resultant circuit is describes in HDL and usualy refered to the gate level netlist. the gate level netlist is functionaly equivelent to the RTL. "standard Cells" have regular layouts.
+Floor planning and Power planning
+
+The main objective here is that to plan silicon area and distribute the power to the whole circuit. In the chip floor planning, the partition chip die between different system building blocks and place the i/o pads. In micro floor planning, we define the dimensions, pin locations, rows.
+
+![image](https://user-images.githubusercontent.com/123365842/216226778-a2a0a56d-b229-4bd8-9137-1d5ea74a91d9.png)
+
+
+In power planning, the power network is connstructed. tipically, the chip is power by multiple VDD and GND. so, total components are connected to power supply horizontaly and vertically by metal streps. here parallel structures are used to reduce the resistance. To address the electromagnetization problem, power distribution network uses upper metal leyers, which are thicker than lower metal layers. Hence have less resistance.
+
+![image](https://user-images.githubusercontent.com/123365842/216226914-399c08f5-1382-48a9-baf5-98a57379459e.png)
+
+# Placement
+
+In this process, we place the gate level netlist on the floor planning rows, alligned with the sites. cells should be placed very closed to eachother to reduce the interconnnect delay. Usually placement is done in 2 steps:
+
+    Global placement
+
+    Detailed placement
+    
+![image](https://user-images.githubusercontent.com/123365842/216227008-996f1c81-d198-476d-9a4a-21090c5a5b98.png)
+
+Global placement
+
+Global placement is very first stage of the placement where cells are placed inside the core area for the first time looking at the timing and congestion. Global Placement aims at generating a rough placement solution that may violate some placement constraints while maintaining a global view of the whole Netlist.
+Detailed placement
+
+In detailed placements, we determined the exact route and layers for each netlist. the objective of detailed placement is valid routing, minimize area and meet timing constrains. Additional objective is minimum via and less power.
+Clock tree synthesis (CTS)
+
+Before routing the signals, we have to route the clock. In the process of clock synthesis, we have distribute the clock to the every sequential elements. for example flipflops, registers, ADC, DAC ete. basically clock netwroks looks likes a tree. where the clock source is roots and the clock elements are end leaves. Synthesization should be done in a manner that with minimum skew and in a good shape.To minimize the clock skew by using the low-skew global routing resources for clock signals.Microsemi devices provide various types of global routing resources that significantly reduce skew.Usually a tree is a H tree, X tree etc.
+
+![image](https://user-images.githubusercontent.com/123365842/216227551-936be733-39d6-43cf-b6c2-3020d1175320.png)
+
+# Routing
+
+After routing the clock, the signal routing comes. Making physical connections between signal pins using metal layers are called Routing. Routing is the stage after CTS and optimization where exact paths for the interconnection of standard cells and macros and I/O pins are determined. There are two types of nets in VLSI systems that need special attention in routing:
+
+    Clock nets
+
+    Power/Ground nets
+
+The sky130 PDK defines the 6 routing leyers. the lowest leyer is called local interconnect layer (titanium nitride layer). Other five layers are alluminium layers.
+
+![image](https://user-images.githubusercontent.com/123365842/216227685-73e8c995-fb5f-4d8c-8dc4-6520ca7f0524.png)
+
+In the proccess of routing, metal trackes forms a routing grids and these grids are huge. so, devide and conquer approach is use for routing. The two types of routing is used:
+
+    Global routing: Generates the routing guides
+
+    Detailed Routing: Uses the routing guides to implement the actual wiring
+
+# Sign off
+
+Once the routing is done, we can construct the final layout. This final layout will goes under the verification. Two types of verifications are there:
+
+    Physical verification: Here design rule checking will done and it will check the final layout and owners layout
+
+    Timing Verification: Here Static Timing Analysis will done
+
+# Introduction to OPENLANE:
+
+OPENLANE is an automated RTL to GDSII flow that is composed of several tools such as OpenROAD, Yosys, Magic, Netgen, Fault, CVC SPEF-Extractor, CU-GR, Klayout and a number of scripts used for design exploration and optimization. It is started as an Open-source flow for a true Open Source tape-out Experiment. striVe is a family of open everything SoCs:
+
+    Open PDK
+
+    Open EDA
+
+    Open RTL
+
+# striVe SoC Family
+
+![image](https://user-images.githubusercontent.com/123365842/216228007-1de27c57-c048-4fe7-b5de-26c83ad232e1.png)
+
+The main goal of OPENLANE is to produce a clean GDSII with no human intervation (no-human-in-the-loop). here the meaning of clean is that:
+
+    No LVS violations
+
+    No DRC Violations
+
+    No timing Violations
+
+OPENLANE is tuned for skyWter130nm open PDK. it can be used to harden Macros and chips.there is two mode of operation
+
+    Autonomus : it is the push botton flow. with the push botton , it is a some time base design and due to this push botton, we get final GDSII
+
+    interactive : here we can run comamds and steps one by one.
+
+It has large number of design examples(43 designs with their best configurations).
+
+# OpenLANE ASIC Flow (Detailed)
+
+![image](https://user-images.githubusercontent.com/123365842/216228146-74544a37-7128-49f0-bd8e-e534e4da298a.png)
+
+The design exploration utility is also used for regression testing(CI). we run OpenLANE on ~ 70 designs and compare the results to the best known ones.
+# DFT(Design for Test)
+
+it perform scan inserption, automatic test pattern generation, Test patterns compaction, Fault coverage, Fault simulation.
+
+![image](https://user-images.githubusercontent.com/123365842/216228218-6f391beb-3ce3-4ea4-b70c-73ec500a5f03.png)
+
+After that physical implementation is done by OpenROAD app. physical implementation involves the several steps:
+
+    Floor/Power Planning
+
+    End Decoupling Capacitors and Tap cells insertion
+
+    Placements: Global and Detailed
+
+    Post Placement Optimization
+
+    Clock Tree synthesis (CTS)
+
+    Routing: Global and Detailed
+
+Every time the netlist is modified.(CTS modifies the netlist and Post Placements optimization also modifies the netlist).so for that verification must be performed. The LCE(yosys) is used to formally confirm that the function did not change after modifying the netlist. 
+Dealing with antenna rules Violation: when a metal wire segment is fabricated, it can act as antenna.as an antenna, it collect charges which can demaged the transister gates during the fabrication.
+
+![image](https://user-images.githubusercontent.com/123365842/216229009-a1fd97cc-e17d-4c0f-b86f-00543f1393a1.png)
+
+To address this issue, we have to limit the lenght of the wire. usually this is the job of the router. If router fails to do this, then there are two solutions:
+
+    Bridging attaches a higher layer intermediary
+
+![image](https://user-images.githubusercontent.com/123365842/216229074-61538ad8-aabc-4408-9a5e-3ebb49a9fcd7.png)
+
+image
+
+    Add antenna diode cell to leak away charges.(Antenna diodes are provided by the SCL)
+
+![image](https://user-images.githubusercontent.com/123365842/216229129-30d8d9a0-6bff-400d-b8ff-0ee318ba49dc.png)
+
+With OpenLANE, we took a preventive approach. here we add fake antenna diode next to every cell input after placement. Then run the Antenna checker on the routed layout. If the checker reports a violation on cell input pin, replace the fake diode cell by a real one.
+
+![image](https://user-images.githubusercontent.com/123365842/216229221-3fc98a37-4a65-45a2-9207-7140f1f09eee.png)
+
+# Static Timing analysis(STA)
+
+It involves the interconnect RC Extraction(DEF2SPEF) from the routed layout, followed by STA on OpenSTA(OpenROAD) tool. resulting report will shows the timing violations if any violations is there.
+
+# Physical Verification (DRC and LVS)
+
+Magic is used for design Rules checking and SPICE Extraction from Layout. Magic and Netgen are used for LVS.
+
+# Open source EDA tools
+# OpenLANE Directory Structure in detail
+# cd command
+
+cd means change directory. this command will help us to go inside the directory.
+
+# ls command
+
+ls means listing the directory. It is used to find the list of total details of directory.
+
+# ls --ltr
+
+This command will help to list the details in cronological order.
+
+Working in Sky130_fd_sc_hd PDK varient. where, "sky130" is process name or node name."fd" is a foundary name (skyWater foundary)."sc" means standerd cell librery files and the last one "hd" stands for high density(basically one type of varient).
+
+Sky130_fd_sc_hd varient contains many technology files like verilog, spice, techlef, meglef,mag,gds,cdl,lib,lef,etc. (techlef file contains the layer information).
+
+# Design Preparation Step
+
+when we enter in the OpenLANE, we have to use flow.tcl because as a name says, it will goes with the flow using the script. And by using interactive switch, we will do step by step process. without interactive switch, it will run complete flow from RTL to GDSII. Now OpenLANE is open and we can see that prompt will change now. 
+
+Write the Command is
+
+$ cd Desktop/work/tools/openlane_workind_dir/openlane
+$docker
+$./flow.tcl -interactive
+
+So, show the following figure:
+
+![image](https://user-images.githubusercontent.com/123365842/216230707-e1f97470-1673-4a0b-b8c1-cb16841a9247.png)
+
+Now, here we are ready to execute the command.
+
+Now, if we are going into the design folder in openlane, there are nearly 30-40 designs are already builted. Out of them we can open any of the design. for example, here we are opening the picorv32a.v design. In this design we can see many files are available. i.e., scr, config.tcl, etc. This config.tlc file contains every details about the design. for example, details about enrollment, clock period, clock period port etc.
+
+![image](https://user-images.githubusercontent.com/123365842/216231741-d64401fb-a0c7-43a9-90aa-f55854831a86.png)
+
+Here we can see that the time period is set to the 5.00 nsec. but is we see in the openlane sky130_fd_sc_hd folder, the period is set about 24 nsec. so it is not override to the main file. If it override then give first priority to the main folder. 
+
+Write the command is 
+
+%package require openlane 0.9
+%prep –design picorv32a
+
+![image](https://user-images.githubusercontent.com/123365842/216232349-c3cb30de-d18b-43f3-9165-c4bec71eefc3.png)
+
+Now, in openlane, we are going to run the synthesis, but before synthesis, we have to prepare design setup stage. for that command is " prep -design picorv32a".
+
+Write the command is
+$ cd work/tools/openlane_working_dir/openlane/designs/picorv32a
+Now we have to input all the packages which required to run the flow.Here we are ready to execute the command.
+
+Write the command is
+
+$less config.tcl
+
+![image](https://user-images.githubusercontent.com/123365842/216235412-f185b66f-995c-42a5-980c-4ff599cafc12.png)
+
+Write the command is
+Less sky130A_sky130_fd_sc_hd_config.tcl
+![image](https://user-images.githubusercontent.com/123365842/216235549-b0d17780-7070-4b2e-bff2-f0eb58b4016d.png)
+so, here it is shown that preparation is completed.
+
+Review after design preparation and run synthesis
+
+After completing the preparation, in the picorv32a file, the run terictory is created. Inside the folder, Today's date is created. so in this terictory some folders are available which is required for openlane.
+
+To Review is the write command
+cd work/…../picorn32a/$ runs/01-02-09-25/
+01-02-09-25 $ cd tmp 
+tmp $ ls
+$ cd tmp
+temp $ cd ..
+01-02-09-25$ ls –ltr
+$ cd tmp
+tmp $ less merged.lef
+
+![image](https://user-images.githubusercontent.com/123365842/216235854-3e7a4c52-7284-4258-867c-7dbeb5ab6d83.png)
+
+
+![image](https://user-images.githubusercontent.com/123365842/216236125-c6566ada-9f6d-42fe-ad2c-8d31f97145ce.png)
+
+In the temp file, merged.lef file is available which was created in preparation time. if we open this merged.lef file, we get all the wire or layer level and cell level information.
+
+Write the command is 
+
+$Less merged.lef
+![image](https://user-images.githubusercontent.com/123365842/216236247-85c52e12-ae12-48f2-bfb3-ca561d9f771f.png)
+
+![image](https://user-images.githubusercontent.com/123365842/216236472-3cec7431-f914-4d36-b03b-6db87ec74b3b.png)
+While, in the result folder is empty because till we have not run anything and in the report folder all the folders are there about synthesis, placement, floorplanning,cts,routing,magic,lvs.
+
+![image](https://user-images.githubusercontent.com/123365842/216236562-26690ff7-c5c8-4115-860f-714287301cdf.png)
+now here also one config.tcl file is available similar like design folder. But this config.tcl file contains all default parameter taken by the run.
+
+![image](https://user-images.githubusercontent.com/123365842/216236623-4b3871fa-8146-4db9-9eec-5ef606b955b9.png)
+
+when we make some change in the origional configuration and then we run, for example if we make a change in core utilization in the floorplanning and then we run the floorplanning, at this time in the congig.tcl file, the core utility will change and by cross checking it we can check that the modification is reflected in the exicution or not.
+
+Now, cmds.log file takes all the record of the commands, what we have fab.
+
+![image](https://user-images.githubusercontent.com/123365842/216236767-173120a5-fa1a-4a74-85e4-4816dbb43c7e.png)
+
+To Openlane
+%run_synthesis
+
+![image](https://user-images.githubusercontent.com/123365842/216236818-ff26a1d2-95ad-4f5e-94e7-209d667b25a0.png)
+So, the flop ratio = (number of flip flops)/(number of total cell).
+
+So, the flop ratio is 10.84%.
+
+Before run, we saw that the result folder is empty. but now, after running the synthesis, we can see that all the mapping have been done by ABC.
+
+![image](https://user-images.githubusercontent.com/123365842/216236856-f51c765d-53c9-40f2-b47b-df452af8dc30.png)
+
+And in the report, we can see when the actual synthesis has done. and the actual statistics synthesis report is showing below, which is same as what we have seen before.
+![image](https://user-images.githubusercontent.com/123365842/216238201-a14f19b2-7d93-4a64-b621-c2f70e85b508.png)
+From the data of synthesis, total number of counter D_flip-flops is 1613. and the number of cells is 14876.
+![image](https://user-images.githubusercontent.com/123365842/216238254-6340238a-2bb8-4372-92d5-c79d8c174d2d.png)
+So, the flop ratio = (number of flip flops)/(number of total cell).
+
+So, the flop ratio is 10.84%.
+
+Before run, we saw that the result folder is empty. but now, after running the synthesis, we can see that all the mapping have been done by ABC.
+
+![image](https://user-images.githubusercontent.com/123365842/216238319-8d3b9867-a3f4-49f6-a42a-6a98711037dd.png)
+
+And in the report, we can see when the actual synthesis has done. and the actual statistics synthesis report is showing below, which is same as what we have seen before.
+
+![image](https://user-images.githubusercontent.com/123365842/216238440-08ef691f-46f9-4f7c-aacf-d9901b10efe7.png)
+
+
+
+
+
+
+
+    
+
+
 
 
    
