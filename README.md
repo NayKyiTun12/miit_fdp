@@ -1578,6 +1578,459 @@ And in the report, we can see when the actual synthesis has done. and the actual
 
 ![image](https://user-images.githubusercontent.com/123365842/216238440-08ef691f-46f9-4f7c-aacf-d9901b10efe7.png)
 
+# Advance Physical Design using OpenLANE/Sky130
+# Day 2 -Good floorplanning Vs Bad floorplanning and introduction to library cells
+# Chip floorplanning considerations
+# Utilization factor and aspect ratio
+# 1)defining the width and height of core and Die
+![image](https://user-images.githubusercontent.com/123365842/216497139-9fc3bc28-bbfc-4007-91e8-51d3ecf0c315.png)
+let's begin with netlist( Netlist describes the connectivity of an electronic designs). Considering a netlist with 2 flops and 2 gates.
+![image](https://user-images.githubusercontent.com/123365842/216497239-eb25762f-2a40-4225-96b8-980b608af398.png)
+lets giving the height and width of standerd cell is 1 unit. So, area of standerd cell is 1 square unit. And assuming the same area for the flip flops also.
+
+Now lets calculate the area occupied by the netlist on a silicon wafer by arranging them together. The total area occupied by netlist in silicon wafer is 4 square units.
+![image](https://user-images.githubusercontent.com/123365842/216497314-38be173d-8ddf-4b1b-b505-160c41fc5b57.png)
+
+# what is the core and die?
+
+A 'core' is the section of the chip where the fundamental logic of the design is placed.
+
+A 'Die', which is consist of core, is small semiconductor material specimen on which the fundamental circuits is fabricated.
+
+![image](https://user-images.githubusercontent.com/123365842/216497412-0b47e03c-5c58-40d6-a8ac-2c8730e70490.png)
+If we put the 'arranged netlist' in the core, then whole core is occupied by netlist. that means utilization of core is 100%.
+![image](https://user-images.githubusercontent.com/123365842/216497511-c54c2411-d246-425f-8f03-b8c3d234a3fa.png)
+
+# Utilization factor
+
+it is defined as, 'the area occupied by netlist' devided by the 'total area of core'.
+
+so, in above case, the utilization factor is 1.
+
+practically, we don't go with 100% uti;ization. practically utilization factor is about 50%-60% to add other extra cells (like buffer) in the core after netlist is placed.
+
+# Aspect Ratio
+
+it is defined as (height)/ (width). here in above example the aspect ratio is 1.
+# Concept of pre-placed cells
+# 2) Define locations of preplaced cells
+
+to define the preplaced cells, let's take a combinational logic i.e., mux, multiplier, clock devider, etc. and assuming that the output of the circuit is huge and assuming that the circuit has some 100k gates. so let devides in two blocks of 50k gates.
+![image](https://user-images.githubusercontent.com/123365842/216497694-8a8e2645-464d-4f72-989e-cb3d42eabdab.png)
+This both blocks are implimented separatly. Now, extending the input and output pins from the both blocks. now, let's detached these box. we will black box the boxes and detached them. After black boxing, the upper portion is invisible from the top or invisible to the one , who is looking into the main netlist. now we make separate them out.
+![image](https://user-images.githubusercontent.com/123365842/216497747-eaac9452-80c0-4de7-8301-6991645ee807.png)
+
+This blocks are implemented in netlist once and then we can reuse it multiple time. Similarly, there are other modules or IPs also readily available.i.e.,memory, clock gating cell, comparater, mux. these all are part of the top level netlist.They recieve some signals, they perform some functions, they deliver the outputs but the functionality of the cell is implemented only once. That what we called as preplaced cells.
+
+The arrangement of these ip's in a chip is refferd as floorplanning.These IP's have user-defined locations, and hence are placed in chip before automated placement and routing are called "preplacement cells".These cells are place din such fashion that, the placement and routing tool not touch the location of the cell.
+
+![image](https://user-images.githubusercontent.com/123365842/216497877-04b33ae5-e97f-4092-975d-9bfd199c6b33.png)
+
+Let consider memory as a preplaced cells as a block 'a', block 'b' and block 'c'. Memory of any device is implemented once and reused multiple times. these preplaced cells are located as per the design bacckground. the location of the cells are never touched.
+
+# De-coupling capacitors
+# 3) surround pre-placed cells with Decoupling capacitors
+
+Let consider some circuit, which is part of the blocks which were defined above. When some gate (let consider AND gate) switched from 0 to 1 ot 1 to 0, considered amount of the switching current required because of small capacitance is available there. this capacitor should be completely charged to represent logic 1 and completly discharged to represent logic 0. the required amount of the charge is suplied from the Vdd and absorb from the Vss. during supplying the current, wire has some drop of voltage due to resistence and inductunce of the physical wire.
+
+![image](https://user-images.githubusercontent.com/123365842/216498023-478e280e-d1ae-4800-98be-9e69fc9f1718.png)
+
+So, due to this if ideal logic 1 = 1 volt then here practically it can be less then 1 volt i.e., 0.97 volts (Vdd'). So, for any signal to be considered as Logic '0' and '1' in the NM low and NM high range. It is danger case.
+
+![image](https://user-images.githubusercontent.com/123365842/216498080-bfe00810-8542-47fa-8b94-968584c56322.png)
+
+To solve this problem,, we have to put De-coupling capacitor in parallel with the circuit. Every time the circuit switches, it draws current from Cd, whereas, the RL network is used to replacenish the charge into Cd.
+
+![image](https://user-images.githubusercontent.com/123365842/216498230-a19749a0-e510-4128-9b11-a3c69a4e7e77.png)
+
+![image](https://user-images.githubusercontent.com/123365842/216498256-f4e3ab25-5dd8-40ae-9ec0-92caf450588c.png)
+
+# Power Planning
+# 4) How to do power planning?
+
+Up to here, we have taken care of local communication. Now let consider that local circuitory as a black box and it can be repeat multiple times and power supply is also connected to all of them as shown below,
+
+![image](https://user-images.githubusercontent.com/123365842/216498336-e2debdcf-81dd-4c38-a4bf-9cf119353c52.png)
+
+Now 16 bit bus has to retain the same signal from driver to the load. so it should get the sufficient power from the supply. But at this bus, there is no de-coupling capacitor is available because it is not physible to put capacitor at all over the place. now, power supply is far away from the bus, that is why some drop between them will definalty occurs.
+
+Let consider this 16 bit bus connected to inverter. So, all capacitor are initially charged will get discharged and vice-versa due to inverter.
+
+![image](https://user-images.githubusercontent.com/123365842/216498433-f96323ee-b3a2-425e-af42-52161def28bf.png)
+
+But the problem is occurs due to all capacitor is connected to the single ground. This will cause a bump in 'ground' tap point during discharging.
+
+![image](https://user-images.githubusercontent.com/123365842/216498474-885afa8c-0e9b-4118-8f8b-aebd3110078a.png)
+
+Same problem will occurse during the charging time also. at that time lowering of voltage occurse at 'Vdd' tap point.
+
+![image](https://user-images.githubusercontent.com/123365842/216498551-84387c34-790f-483a-bcbf-ffd1e92917d5.png)
+
+The solution of the problem is use multiple power supply. So, every block will take charge from neartest power supply and similarly dump the charge to the nearer ground. this type of power supply is called mesh.
+
+![image](https://user-images.githubusercontent.com/123365842/216498635-097bc5c7-3e54-4e2f-a00e-99a5d10bb9b5.png)
+
+And the power planning is shown below,
+
+![image](https://user-images.githubusercontent.com/123365842/216498733-45299293-f07a-4af5-8bac-1f7ab9a5fee7.png)
+
+# Pin placement and Logic floor planning considerations
+# 5) Pin Placement
+
+Lets take below designs for example that needs to implemented.
+
+![image](https://user-images.githubusercontent.com/123365842/216498870-4e753678-e24d-4dbc-999f-ef080ebc32f1.png)
+
+Both the sections has different inputs like Din1 and Din2 and operated from different clocks like clock 1 and clock 2. along with that we have preplaced cells as well. So, basically now we have 4 input ports and 3 output ports.
+
+let's have one more design that needs to be implemented. this types of circuits are very much helpful to understand the timing analysis of inter clocks.
+
+now complete design becomes like given below which has 6 input ports and 5 output ports. it is called the 'Netlist'.
+
+![image](https://user-images.githubusercontent.com/123365842/216498934-415b69e9-5c3b-4ff0-98d0-927f14eaee9d.png)
+
+Let's put this netlist in the core which we have designed before and let's try to fill this empty area between core and die with the pin information. The frontend team who decides the netlist input and output and the backend team who done the pin placements. So according to the pin placements, we have to locate the preplaced blocks nearer to the inputs of the preplaced blocks.
+
+![image](https://user-images.githubusercontent.com/123365842/216499001-a855dd76-345d-48ce-be01-cb8eb5adcea5.png)
+
+Here one thing that we noticed is that clock-in and clock-out pins are bigger in size as compared to input and output pins. reason behind this is that, input clocks are conntinuously provides the signal to the every elements of the chip and output clock should out the signal as fast as possible. So, we need least resistance path for the clocks inputs and clocks outputs. So, bigger the size, lower the resistance.
+
+One more thing is need to take care about is that, this pin placement area is blocked for routing and cell placements. so we nned to do logical cell placement blockage. this blockage is shoown in above image in between pins.
+
+So, floor plan is ready for Placement and Routing step.
+
+# Steps to run floorplan using OpenLANE
+
+Before run the floorplanning, we required some switches for the floorplanning. these we can get from the configuration from openlane.
+
+![image](https://user-images.githubusercontent.com/123365842/216499709-7aa46e0f-4bdc-4359-ac18-dae90b83cd3f.png)
+
+Here we can see that the core utilization ratio is 50% (bydefault) and aspect ratio is 1 (bydefault). similarly other information is also given. But it is not neccessory to take these values. we need to change these value as per the given requirments also.
+
+Here FP_PDN files are set the power distribution network. These switches are set in the floorplane stage bydefault in OpenLANE.
+
+![image](https://user-images.githubusercontent.com/123365842/216500065-80732e6e-3148-4465-8938-453a9ba33e01.png)
+
+Here, (FP_IO MODE) 1, 0 means pin positioning is random but it is on equal distance.
+
+In the OpenLANE lower priority is given to system default (floorplanning.tcl), the next priority is given to config.tcl and then priority is given to PDK varient.tcl (sky130A_sky130_fd_sc_hd_congig.tcl).
+
+Now we see, with this settings how floorplan run.
+Reviewing floorplan files and steps to view floorplan
+
+In the run folder, we can see the connfig.tcl file. this file contains all the configuration that are taken by the flow. if we open the config.tcl file, then we can see that which are the parameters are accepted in the current flow.
+
+![image](https://user-images.githubusercontent.com/123365842/216500316-3d83f796-1d61-46bc-a86c-5a72debf62f3.png)
+
+here we can see that, the core utilization is 35%, aspect ratio is 1 and core margin is taken as 0. while in default the core utilization is 50%. this is the issue. because this design is override the system. but it is the taken from PDK varient.tcl file. so priority vise it is true.
+
+To watch how floorplane looks, we have to go in the results. in the result, one def( design exchange formate) file is available. if we open this file, we can see all information about die area (0 0) (660685 671405), unit distance in micron (1000). it means 1 micron means 1000 databased units. so 660685 and 671405 are databased units. and if we devide this by 1000 then we can get the dimensions of chips in micrometer.
+
+![image](https://user-images.githubusercontent.com/123365842/216500398-5b6845f0-b45a-4263-9b3e-8fd99f775154.png)
+
+so, the width of chip is 660.685 micrometer and height of the chip is 671.405 micrometer.
+
+To see the actual layout after the flow, we have to open the magic file by adding the command magic -T /home/kunalg123/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.floorplan.def
+
+And then after pressing the enter, Magic file will open. here we can see the layout.
+
+![image](https://user-images.githubusercontent.com/123365842/216500522-2a0958e1-ce3d-4045-87b2-1424483ee7cb.png)
+
+# Reviewing floorplan layot with magic.
+
+In the layout we can see that, input output pins are at equal distance.
+
+![image](https://user-images.githubusercontent.com/123365842/216500790-fa196b1f-2f8e-458c-9621-9a64387e7e91.png)
+
+after selecting (To select object, first click on the object and then press 's' from keyboard. the object will hight lited. to zoom in the object, click on the object and then press 'z' and for zoom out press 'sft+z') one input pin, if we want to check the location or to know at on which layer it is available, we have to open tkcon window and type "what". it will shows all the details about that perticular pin.
+
+![image](https://user-images.githubusercontent.com/123365842/216501273-a7ab1bb5-d7a1-4c9d-9ef7-1cc353e09d9b.png)
+
+![image](https://user-images.githubusercontent.com/123365842/216501382-8e51996c-e3be-408e-8e7d-0efabd2ef7c4.png)
+
+so, it show that the pin is in the metal 3.similarly doing for the vertical pins, we find that this pin is at metal 2.
+
+![image](https://user-images.githubusercontent.com/123365842/216501774-e86b5881-607e-49b8-8caa-1ede0e807ddc.png)
+
+Along with the side rows,the Decap cells are arranged at the border of the side rows.
+
+![image](https://user-images.githubusercontent.com/123365842/216501601-cddf8697-4114-4683-8f24-f320cdc38274.png)
+
+Another cells also placed here, which is a tap cells. these cells are meant to avoide the latch-up problems in the CMOS devices. it connect N-well to the Vdd and substrate to the Ground. these tap cells are placed at diagonally equal distance.
+
+![image](https://user-images.githubusercontent.com/123365842/216501884-cae9cf3b-28f7-4aaf-8967-ec214870d16f.png)
+
+In the floorplane, standerd cells are not placed but here standerd cells are available in the left side of the floorplan. we can see few boxes are there.
+
+![image](https://user-images.githubusercontent.com/123365842/216502114-dfd0b486-34da-4aed-ace6-4dc1b59e79a1.png)
+
+here we can see that first standerd cells is for buffer 1. similarly other cells are for buffer 2, AND gate etc.
+Library building and Placement
+Netlist binding and initial place design
+1) bind netlist with physical cells
+
+Taking netlist as what we taken before,
+
+![image](https://user-images.githubusercontent.com/123365842/216502199-1c2e32d5-4066-4802-ac90-3f42ababfb56.png)
+
+Here, we can see that every gate or flip-flops have a shape to understand the functionality of the element. But practically, this cells are square or rectangular boxes which has internally some logic to perform. So, here we are taking all the elements from netlist and giving them a perfact height and width with perticular dimention. These all cells together are called 'self'. And this self are stored in the lybrary. Library have all the innformation about all the blocks, like height, width , time delay, conditional innformation, etc. library also have a option for the similar cells (with same functionality) like this with different height and width. According to our space available at floorplanning we can choose out of them.
+
+![image](https://user-images.githubusercontent.com/123365842/216502240-9e99a04d-d34b-43cb-a9b5-ae3b8c6681ca.png)
+
+After giving size and shape to each and every box, next step is to take the boxes or element from library and placed in the floorplan. This is called placements of the cells.According to the design of the netlist, we have to put physical blocks in the floorplan which we have design before.Put all the blocks according to the input and output of that perticular blocks.
+
+![image](https://user-images.githubusercontent.com/123365842/216502303-40314d80-e89e-445d-9180-4e5626e9571d.png)
+
+up to here we have done stage one and stage two placement. Now we will going for stage 3 and 4. here we have to place FF1 of stage 3 nearer to the Din3 and FF2 of stage 3 nearer to the Dout3. But Din3 and Dout3 are at somme distance from eachother. same thing is there for FF1 and FF2 of stage 4. Let's we placed these all element in such manner that all elements are closed to it's input and output pins.
+
+![image](https://user-images.githubusercontent.com/123365842/216502368-316f9ac4-c908-428c-b8c6-ffc88fb5cdf7.png)
+
+But, the distance of FF1 of Stage 4 and Din4 is still far them others. By optimizing the placement, we can solve this problem.
+
+# Optimize placement using estimated wire lenght and capacitance
+# 2) Optimize Placement
+
+As we seen that the distance from Din2 to FF1 of stage 2 is higher. so if we connect the wire between them then resistance and capacitance of the wire comes in to the picture. and due to this the signal integrity can not maintain.
+
+To maintain the integrity of the signal out from Din2 to FF1, we have to put some repeaters like buffers on between Din2 and FF1. But it will cause of loss of area.
+
+In the stage 1, there is no need of any repeater to transmit the signal. But in stage 2, due to high distance, the lenth of wire is high and signal is not transmitted in perticular range. so we required repeater.
+
+![image](https://user-images.githubusercontent.com/123365842/216502492-716b2949-09ed-4f5b-931b-bee50e785b1b.png)
+
+# Final Optimization
+
+Similar as stage 2, in Stage 3 also we required the buffer between gate 2 and FF2.
+
+![image](https://user-images.githubusercontent.com/123365842/216502577-cdf59d48-5951-4739-9e71-248835a41907.png)
+
+Stage 4 is bit tricky as compared to other stages. ![image](https://user-images.githubusercontent.com/123365842/216502610-821a867c-daf0-4e52-8fb7-db576f5357f9.png)
+
+Now we have to check that, what we have done is correct or not. For that we need to do Timing analysis by considering the ideal clocks and according to the data of analysis, we will understand that, the placement is correct or not.
+
+# Need for libraries and characterization.
+# Library charactorization and modelling
+
+In whole IC design, we have to go through synthesis, floor/power planning, placement, routing , STA. In all this steps one thing remain common, which is "Gates or Cells". That is where the library charactorization becomes very important.
+
+# Congestion aware placement using RePLAce
+
+Right now we are not constrain about timing, but constrain about the congestion. so, we are making the congrstion is less.
+
+The placement is donne in two stages. Global and detailed. In global placement, legalization is not happened but after detailed placement legalization will be done.
+
+When we run the placement, first Global placement is happens. main objective of glibal placement is to reducing the length of wires.
+
+Now opening the Magic file to see actual view of standerd cells placement.And the actual view in the magic file is given below,
+
+![image](https://user-images.githubusercontent.com/123365842/216502874-e0dea5f3-825b-4784-98e8-25ef755df615.png)
+
+If we zooom into this, we find the buffers, gates, flip flops in this.
+
+![image](https://user-images.githubusercontent.com/123365842/216502959-6bdd549e-9840-4b34-897a-552f11d6ad3a.png)
+
+# Cell design and characterization flows
+# Inputs for cell design flow
+# Cell design flow
+
+As we know that standerd cells are placed in the library. And in the library many other cells are available which have same functionality but the size is different. As size is different the parameters like hVt, Ivt also different for each standerd cells.
+
+If we take one of the standerd cells called inverter, it has their own design flow by this it can be understandable to EDA tool.
+
+The cell design flow is devided into three part.
+
+    Inputs
+
+    Design steps
+
+    Outputs
+    
+ ![image](https://user-images.githubusercontent.com/123365842/216503071-3e0e1ce4-0e42-4221-ab7c-aaccf0396d5b.png)
+ 
+ # 1)inputs
+
+inputs required for cell design is PDKs, DRC and LVS rules SPICE models, library and user defined specs.
+Circuit design steps
+# 2)design steps
+
+steps are circuit design, layout design, characterization
+# 3)Outputs
+
+The typical output what we get from the circuit design is CDL(circuit description language) file,GDSII,LEF,extracted spice netlist(.cir).
+# Layout design steps
+
+    implement function
+    
+![image](https://user-images.githubusercontent.com/123365842/216503198-b126e2c6-ec8a-4f7a-85b0-6b01ec507f1c.png)
+ 
+Derive the NMOS and PMOS network graph
+
+![image](https://user-images.githubusercontent.com/123365842/216503252-6e0d4e37-6e08-475c-b0ef-c85f2a1349a0.png)
+
+Obtain the Euler's path
+
+![image](https://user-images.githubusercontent.com/123365842/216503321-ed693d03-9f80-4bde-be48-c6560d61e6c8.png)
+
+Stick diagram
+![image](https://user-images.githubusercontent.com/123365842/216503397-1101d1c9-a003-4cb8-8e86-7c95af73ea73.png)
+
+Convert stick diagram into proper layout
+
+![image](https://user-images.githubusercontent.com/123365842/216503446-733d0fb0-3f45-482a-93ed-ee1820a957b1.png)
+
+After layout design, we have to ecxtract the layout and characterize it. In characterization step, we can get the information about Timing, Noice,power.libs and function.
+
+# Characterization Flow
+
+As of now, from the circuit design and layout design, we have final layout of buffer cell. where two buffers are connected in series with each other.
+
+![image](https://user-images.githubusercontent.com/123365842/216503543-775a5aeb-1604-47e3-bbff-d2ae4117d899.png)
+
+Now steps of flow is:
+
+    Read the model file
+
+    read the extracted spice netlist
+
+    reconize the behavior of buffer
+
+    Read the subcircuit of the inverter
+
+    Ateched the neccessory power source
+
+    Apply the stimulus
+
+    Provide the necessory of output capacitance
+
+    Provide the necessory simulatin command
+
+This all steps we have to give in "GUNA" software. and this software will give the timing, noise, power.libs and functions.
+
+# General Timing characterization parameters
+# Timing threshold defination
+
+![image](https://user-images.githubusercontent.com/123365842/216503672-a61a6172-45a0-433a-a46f-93e982085d41.png)
+
+Let we take the waveform from the output of the first buffer and it will be input of the second buffer and taking output of the second buffer also.
+
+![image](https://user-images.githubusercontent.com/123365842/216503723-68684529-16d3-488f-ba05-13c15182716d.png)
+
+
+    slew_low_rise_thr
+
+here low means nearer to the ground, and rise tresold means we want to measer the slope of the increasing graph. typical value of slew low rise thr is around 20-30%. 
+
+![image](https://user-images.githubusercontent.com/123365842/216503788-25f8f5b2-84c6-4404-942a-bddc643f61c6.png)
+
+
+    slew_high_rise_thr
+
+same as above, high means nearer to high value. 
+
+![image](https://user-images.githubusercontent.com/123365842/216503860-8f27dc65-230c-4bfc-8067-64b36806f028.png)
+
+whenever we want to calculate the slew, take the point at 20% from the low and take the point at 20% from the high. according to these point, take the time data and the time difference between them will helps to calculate the slew.
+
+    slew_low_fall_thr
+
+![image](https://user-images.githubusercontent.com/123365842/216503899-fd9d2ef3-027d-45d8-a84c-223fc38fd8f6.png)
+
+    
+    slew_high_fall_thr
+    
+![image](https://user-images.githubusercontent.com/123365842/216503981-8ce5700d-064f-4fb0-a88c-c1acecfa3092.png)
+
+NOw, taking the waveform of input stimulus which is input of the first buffer and with that taking output of the first buffer.
+
+Similar as a slew, thresolds are for delay also available. for that same as slew, we have to take some rise and fall points from the waveforms. this tresolds are almost 50%.
+
+    in_rise_thr
+
+![image](https://user-images.githubusercontent.com/123365842/216504041-12eb18a3-cd32-44d5-ad7a-6fd430095bf9.png)
+
+    in_fall_thr
+    
+![image](https://user-images.githubusercontent.com/123365842/216504093-d2cb59d8-2455-4bce-9ceb-89d1f104d57b.png)
+
+    out_rise_thr
+    
+![image](https://user-images.githubusercontent.com/123365842/216504149-d6b167ba-9b7a-4dbc-a047-0e44931967ac.png)
+
+    out_fall_thr
+    
+![image](https://user-images.githubusercontent.com/123365842/216504229-e74fd8fe-fe1d-41c0-931c-931205cd1564.png)
+
+So, according to rise and fall theresold we can find the rise delay and fall delay of the buffer.
+
+![image](https://user-images.githubusercontent.com/123365842/216504277-fe6633af-09b2-4cc2-805f-5b8874932da6.png)
+
+# Propogation delay and Transition time
+# propogation delay
+
+let's take the same setup for understand the propogation delay. Time delay = Time(out_thr)-time(in_thr).
+
+Let's take waveform on which we can apply above formula.
+
+![image](https://user-images.githubusercontent.com/123365842/216504353-14cfefec-7441-4ec6-9afd-7ecd7d8927fe.png)
+
+In any case if thresold point move at the top, at that time we get negative delay because output comes before input. so reason behind the negative delay is the poor choice of the tresold points. which is not acceptable. so, choosing the thresold point is very important.
+
+![image](https://user-images.githubusercontent.com/123365842/216504406-79528228-8238-4995-81e2-c38ed90d3cf0.png)
+
+Taking another example where the wire delay is very high because of high distance between two elements. so, here by choosing correct thresold point then also we get the negative delay.
+
+![image](https://user-images.githubusercontent.com/123365842/216504505-5ccf0c3b-d611-4340-a1b9-7b1ccc252dc3.png)
+
+# Transition time
+
+transition time = time(slew_high_rise_thr)- time(slew_low_rise_thr)
+
+or
+
+transition time = time(slew_high_fall_thr)- time(slew_low_fall_thr)
+
+let's take waveform for understand the slew calculation.
+
+![image](https://user-images.githubusercontent.com/123365842/216504574-50355add-91a8-465e-b7bb-a8fa4d6c59f9.png)
+
+
+
+
+
+    
+    
+
+
+
+    
+
+
+
+
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
