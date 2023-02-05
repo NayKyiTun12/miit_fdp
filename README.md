@@ -1994,6 +1994,1132 @@ let's take waveform for understand the slew calculation.
 ![image](https://user-images.githubusercontent.com/123365842/216504574-50355add-91a8-465e-b7bb-a8fa4d6c59f9.png)
 
 
+# Day 3 -Design library cells using Magic Layout and ngspice characterization
+# Labs for CMOS inverter ngspice simulations
+# SPICE deck creation for CMOS innverter
+# IO placer revison
+
+Till now, we have done floor planning and run placement also. But if we want to change the floorplanning, for example, in our floor planning, pins are at equal distance and if we want to change it then we can also make it by "Set" command.
+
+For that first we have to check the swithes in the configuration and from that we have to take the syntax "env(FP_IO_MODE) 1". and make it to the "env(FP_IO_MODE) 2". then again run the floorplanning.
+
+Then check the changes in the pins location through magic -T.
+
+Write the command is 
+
+"$magic –T /home/naykyitun/desktop/work/tools/openlane_working_directory/pdks/sky130A/libs.tech/magic/sky130A.tech leaf read ../../tmp/merged.lef def read picrov32a.floorplan.def&"
+
+![image](https://user-images.githubusercontent.com/123365842/216800048-6bc0b25d-4cf3-4ad4-99e3-bc9813470e50.png)
+
+So, here we can see that there are no pins in the upper half side. all pins are in the lower half of the core.
+SPICE deck creation for CMOS inverter
+VTC- SPICE simulations.
+
+Before entering into the simulation, we have to creat the spice deck. The spice deck is nothing but netlist. so, we have to creat the spice deck for CMOS.
+
+    Component connectivity
+
+![image](https://user-images.githubusercontent.com/123365842/216800071-4cc91821-e540-49aa-8468-dfb0fe306c99.png)
+
+    Define the components values
+    
+ ![image](https://user-images.githubusercontent.com/123365842/216800145-2f3df5de-f7c8-4c7d-9b55-cd8a079f3af3.png)
+ 
+    Identyfy the nodes
+    
+ ![image](https://user-images.githubusercontent.com/123365842/216800196-48231a17-b36c-4bcf-83dc-3f512ce4e064.png)
+
+    Name 'Nodes'
+    
+ ![image](https://user-images.githubusercontent.com/123365842/216800208-3a41b037-9ee2-4db0-940c-a086f0353303.png)
+
+Now, let's strat the writing the SPICE deck
+
+![image](https://user-images.githubusercontent.com/123365842/216800216-11f2fb76-1439-4a57-97e9-ff08e5350c52.png)
+
+In the syntex, It is like Name of the mosfet, drain , gate, substrait , source. so, the meaning of the syntex is that, name of the mosfet is M1, Drain is connected to OUT node, Gate is connected to IN node, Substrait is connected to Vdd and the Source is connected to Vdd node. PMOS says the type of mosfet and the Width and lenth of channel is defined. similarly, For M2, syntex were written.
+
+# SPICE simulation lab for CMOS
+
+Tile we discribe the connectivity information about CMOS inverter only. Now we have to discribe connectivity information about other components also like source, capacitor etc. so, lets look into the other components.
+
+First we discribe the load capacitor and then about the Vdd and Vin.
+
+![image](https://user-images.githubusercontent.com/123365842/216800252-ff65b3c0-00da-49f9-a1b4-645609f6f5ed.png)
+
+Now, we have to give simulation command. which is about swiping the Vin from 0 to 2.5 with the steps of 0.05. Because we want Vout while changing the Vin.
+
+![image](https://user-images.githubusercontent.com/123365842/216800264-e4b37cfa-a868-41a8-bde2-197baa651029.png)
+
+The final step is to discribe the Model file.Model file contains all the details about PMOS and NMOS. from this file only we get the information about PMOS and NMOS.
+
+![image](https://user-images.githubusercontent.com/123365842/216800294-5d2929da-848e-4a5c-a270-eb1e7ae2a816.png)
+
+So, the total program is given below,
+   
+![image](https://user-images.githubusercontent.com/123365842/216800300-cbbef08a-2627-45f3-ab09-bfe24f0c877f.png)
+
+Now, doing the simulation and get the graph like this,
+
+![image](https://user-images.githubusercontent.com/123365842/216800315-7ea908c3-f1b4-445a-8683-329df4841c65.png)
+
+Now, doing other simulation in which we change the PMOS width to 3 times of NMOS width. and after diong the simulation, we get the graph like this,
+
+![image](https://user-images.githubusercontent.com/123365842/216800332-1401a97e-1d31-4252-b08c-473425c5b51a.png)
+
+The difference between this two graph is that in the second graph the transfer charactoristic is lies in the ecxact middle of the graph where in the first graph it is lies left from the middle of the graph.
+# Switching Thresold Vm
+
+These both model of different width has their own application. By comparing this both waveform, we can see that the shape of the both waveform is same irrespective of the voltage level.
+
+This thing tell us that when Vin is at low, output is at high and when Vin is at high, the output is at low. so the charactoristic is maintain at all kind of CMOS with different size of NMOS or PMOS. That is why CMOS logic is very widely used in the design of the gates.
+
+Switching thresold, Vm (the point at which the device switches the level) is the one of the parameter that defined the robustness of the Inverter. Switching thresold is a point at which Vin=Vout.
+
+![image](https://user-images.githubusercontent.com/123365842/216800364-e1909305-31d3-4c96-941f-71ccc788e1b9.png)
+
+In this figure, we can see that at Vm~0.9v, Vin=Vout. This point is very critical point for the CMOS because at this point there is chance that both PMOS and NMOS are turned on. If both are turned on then there is chances of leakage current(Means current flow direcly from power to ground).
+
+By comparing this both the graph we can understang the concept of switching thresold voltage.
+
+![image](https://user-images.githubusercontent.com/123365842/216800386-f41b8984-2da2-4081-ae91-220336a6c4e8.png)
+
+![image](https://user-images.githubusercontent.com/123365842/216800400-30572a6c-8811-407b-990c-a73dde3a84f0.png)
+
+Lab steps to git clone vsdstdcelldesign
+
+To get the clone, copy the clone address from reporetery and paste in openlane terminal after the command "git clone". this will create the folder called "vsdstdcelldesign" in openlane directory.
+
+Write the command is "openlane$git clone htps://github.com/nickson-jose/vsdstdcelldesign.git"
+
+![image](https://user-images.githubusercontent.com/123365842/216800433-79a3dc6f-fff8-4c03-bbae-4b1710fdd4a5.png)
+
+So, if we open the openlane directory, we find the vsdstdcelldesing folder in the openlane directory.
+
+![image](https://user-images.githubusercontent.com/123365842/216800465-e6388a3c-378d-4d20-bc9a-9186934625b1.png)
+
+Now if we goes in the vsdstdcelldesign folder and open it, we get the .mag file,libs file etc.
+
+![image](https://user-images.githubusercontent.com/123365842/216800493-38d12cc6-9257-45f2-8f43-249b1d2e20ba.png)
+
+now, let's open the .mag file and see that which layers are used to build the inverter. But before opening the mag file, we need tech file. so we will copy this file from this given below address,
+
+![image](https://user-images.githubusercontent.com/123365842/216800919-16a9dc0e-15cd-4e17-bb22-c004ad40b633.png)
+
+And do copy by "cp" command to the location which is given below,
+
+![image](https://user-images.githubusercontent.com/123365842/216800600-b6394db6-c5a6-4351-8aec-b11e510494ac.png)
+
+Now, we can see that this file is copied in the vsdstdcelldesign folder.
+
+![image](https://user-images.githubusercontent.com/123365842/216800948-6b8cc82b-1994-4a30-a744-453e540ecebe.png)
+
+Now, here to see the layout in magic, we don't need to write the whole address because we copy the tech file here.
+
+Now, appying the magic comand like this,
+
+![image](https://user-images.githubusercontent.com/123365842/216800992-62b7ce67-9b3a-451e-8204-4af19d90f3c2.png)
+
+Now, we can see the layout of CMOS inverter in the magic like this,
+
+![image](https://user-images.githubusercontent.com/123365842/216801015-cf2ab34c-4e8b-4b8c-8015-6c73939fc2a8.png)
+
+Inception of layout CMOS fabrication process
+create active region
+1) selecting a substrate
+
+we select P-type silicon substrate with high resistivity(5~50 ohms) with moderate dopping and orientation is (100).
+2) creating active region for transister
+
+First, we create the isolation layer by depositing the Sio2 layer (~40nm) on the substrate.
+
+![image](https://user-images.githubusercontent.com/123365842/216801031-bf3ac0ba-4997-444c-aac3-775a109361f5.png)
+
+Now, we are depisiting the Si3N4 layer (~80 nm) on the Sio2 layer.
+
+![image](https://user-images.githubusercontent.com/123365842/216801041-7228b9a2-bfee-4af4-9473-7d453aa25f4b.png)
+
+Now we do patterning by using depositing photoresist and using Mask 1 through UV light.
+
+![image](https://user-images.githubusercontent.com/123365842/216801054-3f394dd4-830e-4e05-a1cd-6e7e6ef9730d.png)
+
+Now, first we remove the mask and doing etching of Si3N4 layer on the exposed area.
+
+![image](https://user-images.githubusercontent.com/123365842/216801066-0a62c27b-3033-4215-91e0-87137dae1890.png)
+
+Now, next step is to remove photoresist by chamical reaction, because now to Si3N4 layer itslef behaves like good protecting layer for Sio2 layer. now, if we do LOCOS (local oxidation of silicon) process, the exposed sio2 part will gown and bird break also form. This grown sio2 will provide the perfect isolation between two PMOS and NMOS.
+
+![image](https://user-images.githubusercontent.com/123365842/216801074-63d9af36-8e11-4a35-941e-30cf5e7395c7.png)
+
+Next step is to etchout the Si3N4 layer by hot phosphoric acid.
+
+![image](https://user-images.githubusercontent.com/123365842/216801091-a242cdaa-8f43-4608-9df4-e0249df2d103.png)
+
+# Formation of N-well and P-well
+# 3) N-well and P-well formation
+
+we can not form P-well and N-well at a same time. we have to protect a region while forming one of the region by photoresist. And then using mask 2 and UV light, we will do patterning of photoresist to form P-well.
+
+![image](https://user-images.githubusercontent.com/123365842/216801116-4bf11ffd-7225-4f6c-a356-db00f0495449.png)
+
+Now, the area where we want to form the P-well is exposed. now we remove the mask and by applying the ion implantaton method (~200kev)to form P-well using Boron. But still it is P implant. After performing the high temparature anneling, it will become P-well.
+
+![image](https://user-images.githubusercontent.com/123365842/216801127-4350e3da-9a8f-4485-b405-28d88f530763.png)
+
+We wiil do a similar process to form N-well by using mask 3 and using Phosphorus ions.
+
+![image](https://user-images.githubusercontent.com/123365842/216801140-e36e0f3b-1598-4fb8-911e-29045b897494.png)
+
+till now depth of wells are not define. so, by putting into the high temparature furnace (drive-in diffusion), we will define the depth of wells.
+
+![image](https://user-images.githubusercontent.com/123365842/216801144-88f718b0-1fa6-4de4-b5e9-be01041d76f8.png)
+
+# Formation of gate terminal
+# 4)Gate formation
+
+Gate terminal is the most important terminal of the PMOS and NMOS because from the gate terminal only we can control the thresold voltage. doping concentration and oxide capacitance will control the thresold voltage.
+
+so, first we are maintain the doping concentration here. for that we use mask 4 and again doing the ion implantation of boron ion at lower energy (~60kev).
+
+![image](https://user-images.githubusercontent.com/123365842/216801165-b4adfbe5-10b8-4632-a1c7-db982ec8c020.png)
+
+same process we will repeat for N-well also by using mask 5 and Arsenic ion.
+
+![image](https://user-images.githubusercontent.com/123365842/216801177-689c19b3-7046-4a61-b676-a71dee428cb8.png)
+
+Next step is that we have to fix the oxide layer. but before that we have to remove the oxide layer because this layer is got dammeged because of the privious processes. so,first we remove the layer using HF solution and again re-grown the high quality oxide layer with same thickness.
+
+The final step is the deposition of polysilicon layer over oxide layer with more impurities for low resistance gate terminal.Then etched out this polysilicon layer by using mask 6 and photoresist.
+
+![image](https://user-images.githubusercontent.com/123365842/216801193-42b9d556-f7ea-46b8-9bfa-25e7773de4d4.png)
+
+After etching, remove the photoresist and gate terminal looks like,
+
+![image](https://user-images.githubusercontent.com/123365842/216801206-ad3031ad-e99d-45ab-b3fa-9009c6a67363.png)
+
+Lightly doped drain (LDD) formation
+5) LDD formation
+
+Here, we actully want P+,P-,N doping profile in the PMOS and N+,N-,P doping profile for NMOS. Reason for that is
+
+    Hot electron effect
+
+    short channel effect
+
+For the formation of LDD, we again do ion implantation in P-well by using mask 7 and here we use phosphoros as a ion for light doping.
+
+![image](https://user-images.githubusercontent.com/123365842/216801218-27781e76-c7a2-4479-9129-5dbde9b84a22.png)
+
+Same process we will repeat for N-well. there we use mask 8 and BOron Ion.
+
+![image](https://user-images.githubusercontent.com/123365842/216801231-a0e6dc7e-f218-48ec-9d75-773f0f976404.png)
+
+Now, by creating the spacers, we can protect the actual structre remain constant of P-implantt and N-implant. For that we deposite a thick Sio2 or Si3N4 layer over the gate tereminal.
+
+![image](https://user-images.githubusercontent.com/123365842/216801242-0a2bd1d1-bbe6-499e-ba2a-e0708ccabff5.png)
+
+Now, we do Plasma anisotropic etching. By that side-wall spacers are formed.
+
+![image](https://user-images.githubusercontent.com/123365842/216801261-aa52c6df-8dc8-4cc2-9985-f1a747b0e152.png)
+
+# Source and drain formation
+# 6)source-drain formation
+
+Next step is deposite the very thin screen oxide layer to avoid the effect of channeling.
+
+![image](https://user-images.githubusercontent.com/123365842/216801271-8ca803d1-a4a6-4d50-8b76-38ef4ece53a5.png)
+
+Now to form the drain and source, again we do the ion implantation of arsenic at 75kev to create the N+ implant by using mask 9 in the P-well to form PMOS.
+
+![image](https://user-images.githubusercontent.com/123365842/216801284-33b83cb9-aeb8-4fcb-a95b-96cdd12b4d79.png)
+
+Same process we will repeat for NMOS by using the mask 10 and boron ion in the N-well at 50kev to creat P- implant.
+
+![image](https://user-images.githubusercontent.com/123365842/216801309-dc41ae69-bc44-4f81-b36f-5d83699d8db8.png)
+
+Now we put this Half made CMOS into the high temparature (1000 degree)anneling. So P+ implant and N+ implant now become the source and drain.
+
+![image](https://user-images.githubusercontent.com/123365842/216801320-81dd927a-900c-4252-a7c3-a7d7b5d1b0b3.png)
+
+# Local interconnect formation
+# 7)steps tp form contacts and local interconnects
+
+First step is remove the thin screen oxide layer by etching. Then deposite the titanium (Ti) using sputtering. here Ti is used because Ti has very low resistivity.
+
+![image](https://user-images.githubusercontent.com/123365842/216801343-3e7e1dfb-34b0-4ad9-a439-7005e3002b64.png)
+
+Next step is to create the reaction between Ti layer and source, gate, drain of CMOS. For that wafer is heated at about 650-700 degree temparature in N2 ambient for about 60 seconds. and after reaction, we can see the titanium siliside over the wafer. One more reaction is heppend there between Ti and N. and it results the TIN which is used for local communication.
+
+![image](https://user-images.githubusercontent.com/123365842/216801373-71b7fd8e-2ed4-40c3-8a20-d69e552534bb.png)
+
+Now by using mask 11 and photoresist, we will etched out the TIN and make perticular contacts. TIN is etched out by using RCA cleaning.
+
+![image](https://user-images.githubusercontent.com/123365842/216801391-2e47aaab-f432-456b-a029-0451ab892193.png)
+
+Now, local interconnects are formed after etching and removing the photoresist.
+
+![image](https://user-images.githubusercontent.com/123365842/216801405-48c6b1dc-ecd3-4823-aeb5-f1fc3d3957a4.png)
+
+# Higher level metal formation
+# 8)Higher level metal formation
+
+These steps are very semilar like previous steps. First thing that we are noticing is that the surface is non planner. it is not good to use this type of non planner serface for matel interconnects because of the problems regarding the metal disconinuty. so, we have to plannerize the surface by depositing the thick layer of sio2 with some impurity to make less resistive layer. and then we used CMP (chemical mechanical polishing) technique to plannerise the surface.
+
+![image](https://user-images.githubusercontent.com/123365842/216801424-9231ac66-d8d5-478f-af5d-889c863bc5cf.png)
+
+Now using mask 12 and photorsist we etched the sio2 layer to diposite the metal in it.
+
+![image](https://user-images.githubusercontent.com/123365842/216801452-7fc41b3b-fee2-4063-bcf1-344d59e509de.png)
+
+Now remove the photoresist and seposite the thin later of TIN (~10nm) over the wafer. Because TiN is act as very good adession layer for sio2 and also act as a barrier between bottom layer and top layer of metal interconnects.
+
+![image](https://user-images.githubusercontent.com/123365842/216801463-631060c0-a041-47b6-9abc-5fdb14009f29.png)
+
+Next step is to deposite the blanket tungsten (W) layer over the wafer. and then do the CMP here to plannerize the surface.
+
+![image](https://user-images.githubusercontent.com/123365842/216801476-45be0608-b200-493e-84d5-66774ccb1a09.png)
+
+This W is act as a contact holes and this holes needs to connect to the Higher metal layer. so we will deposite the Al (aluminium) layer.
+
+![image](https://user-images.githubusercontent.com/123365842/216801489-0fa130c0-c0a9-4474-80a4-02f03c63560f.png)
+
+Then by using the mask 13 and photoresist, we etched the W layer out to form the contact at perticular place by Plasma etching.
+
+![image](https://user-images.githubusercontent.com/123365842/216801512-8e64770f-39cc-4ced-bcb1-a23dce2be713.png)
+
+This is our first level of metal interconnets. now we again do the same process as above to deposite the second level of metal interconnect by using mask 14 for etched out the sio2 and using mask 15 for etched out Al leyer.
+
+![image](https://user-images.githubusercontent.com/123365842/216801520-fea71fdc-0bec-4bc0-a59e-97cec573ace1.png)
+
+The upper layer of Al is bit thicker as compared to lower layer of Al.Now, again deposite the layer of sio2 or si3N4 to protect the chip.
+
+![image](https://user-images.githubusercontent.com/123365842/216801531-1c88ee7e-9511-41e9-8816-41b85b69c84f.png)
+
+And finally our CMOS is looks like this after the fabrication.
+
+![image](https://user-images.githubusercontent.com/123365842/216801555-cf81ce94-0c55-42a4-8318-2c86f0741e90.png)
+
+# Lab introduction to Sky130 basic layer layout and LEF using inverter
+
+![image](https://user-images.githubusercontent.com/123365842/216801570-3b208eda-3ae9-4a14-8590-94654b059361.png)
+
+In sky130, every color is showing the different layer. here the firsst layer is for local interconnect shown by blue_perpel color, then second layer is metal 1 which is showm by light perple color, and the metal 2 is shown by pink color. N-well is showm by solide das line. green is N-diffusion region. and red is for polysilicon gate. similarly the brown color is for P-diffusion.
+
+In tckon window, we can see that the selected area is NMOS and similarly we can chech PMOS also. and that is how we can check that the CMOS is working or not.
+
+![image](https://user-images.githubusercontent.com/123365842/216801590-d4e731a7-bb36-48e1-a9b5-5c022661de8a.png)
+
+semilarly we check for the output terminal also.(by double pressing "S" to select the entire thing at output Y).
+
+![image](https://user-images.githubusercontent.com/123365842/216801610-a09bad56-d35b-47ad-b990-0401f0d9aeed.png)
+
+so, we can see that "Y" is attached to locali in cell def sky130_inv.
+
+we can check the source of the PMOS is connected to the ground or not. and similarly we can check it for NMOS also.
+
+# Lab steps to create std cell layout and extract spice netlist
+
+To extract the file from here, we have to write the command in tckon window. and the comand is "extract all".
+
+![image](https://user-images.githubusercontent.com/123365842/216801671-a532d508-b816-409a-a2d6-0a6004f270d3.png)
+
+Now let's go to this location from the terminal. it is exctracted.
+
+![image](https://user-images.githubusercontent.com/123365842/216801636-f9ab9ee6-f049-49d9-8bb7-d2979224d6e1.png)
+
+we will use this .ext file to create the spice file to be use with our ngspice tool. for that we have apply the comand "ext2spice cthresh 0 rthresh 0". this will not create anything new. now again we have to type "ext2spice" comand in tckon window.
+
+![image](https://user-images.githubusercontent.com/123365842/216801698-8426a705-a3f0-4b8c-9ea5-a5977a416633.png)
+
+so, now we are checking the location and at there spice file has been created.
+
+![image](https://user-images.githubusercontent.com/123365842/216801723-af4d7fc2-a772-40e0-a4ef-1966926bb799.png)
+
+let's see what inside the spice file by "vim sky130_inv.spice".
+
+![image](https://user-images.githubusercontent.com/123365842/216801741-10d62522-a9ed-4115-8a00-25c6a4284f9c.png)
+
+# Sky130 Tech File labs
+# Lab steps to create final SPICE dexk using sky130 tech.
+
+![image](https://user-images.githubusercontent.com/123365842/216801793-b6fcc45a-bb78-432f-ab7d-78a02437ee05.png)
+
+here, we can see the all details about the connectivity of the NMOS and PMOS and about the power supply also.
+
+X0 is NMOS and X1 is PMOS and both's connectivity is shown as GATE DRAIN SUBSTATE SOURCE.
+
+But here the scale is 10000 um. but in Magic simulation, it is 0.01.
+
+![image](https://user-images.githubusercontent.com/123365842/216801858-5794b6b5-14be-4cbc-bea9-b7e96391818b.png)
+
+SO, we are going to change the dimension here in the terminal. so any measurement will be in this scale of 0.01u. i.e., width=37*0.01u.
+
+Now we have to include the PMOS and NMOS lib files. it is inside the libs folder in the vsdstdcellsdesign folder.
+
+![image](https://user-images.githubusercontent.com/123365842/216801954-6f8ea586-f878-44e9-84f6-569f81952a29.png)
+
+so, now we include this file in the terminal by ".include ./libs/pshort.lib" and ".include ./libs/nshort.lib" comand.
+
+And then set the supply voltage "VDD" to 3.3v by "VDD VPWR 0 3.3V" comand. and similarly set the value of VSS also.
+
+Now, we need to specify the input files. by Va A VGND PULSE(0V 3.3V 0 0.1ns 2ns 4ns).
+
+Also add the comand for the analysis like, ".tran 1n 20n", ".control" , "run",".endc",".end".
+
+![image](https://user-images.githubusercontent.com/123365842/216802039-56e5d79f-199b-4ba1-81d8-c95f99eac779.png)
+
+after running this file we get output of ngspice like this,
+
+![image](https://user-images.githubusercontent.com/123365842/216802050-95064714-b44b-4635-96d6-d1b8b55afcfc.png)
+
+Now, ploting the graph here by comand, "plot y vs time a".
+
+![image](https://user-images.githubusercontent.com/123365842/216802089-81cd80c1-cc44-419e-8189-51c695d3b009.png)
+
+# Lab steps to characterize inverter using sky130 model file
+
+Here, we have to find value of 4 parameters.
+
+    rise time
+
+it is time taken to the output waveform to 20% value to 80% value.
+
+![image](https://user-images.githubusercontent.com/123365842/216802120-d1cb1545-41c4-4428-a6f9-a1603f6ee345.png)
+
+so, rise time= (2.20374-2.16038)e-09 = 0.04336 nsec.
+
+
+    fall time
+
+it is the time take by output for transition from 80% to 20%.
+
+![image](https://user-images.githubusercontent.com/123365842/216802150-04c55410-9032-4a22-94d2-778f991ecc0f.png)
+
+fall time= (4.0684-4.03037)e-09 = 0.03803 nsec.
+
+Propagation delay
+
+![image](https://user-images.githubusercontent.com/123365842/216803062-2a927335-d535-433a-be4e-e01d5b444b0f.png)
+
+Propogation delay = (2. 18458-2. 18411)e-09 = 0.00047 nsec.
+
+Cell Fall Delay
+
+![image](https://user-images.githubusercontent.com/123365842/216803072-87c40e86-e974-4fc9-a27e-bd63ca9d30f8.png)
+
+Cell fall delay = (4.05374-4.05234)e-09 = 0.0014 nsec.
+
+# Day 4 -Pre-layout timing analysis and importance of good clock tree
+# Timing modelling using delay tables
+# Lab steps to convert grid info to track info
+
+Till now we have done synthesis, floorplaning, placement and how to extract the spice out of it, done charecterization of it. till now, for placement and routing, we doesn't required any information about input/output port,logic path, power, ground.
+
+Now the concept of 'lef' file will comes into the picture. it contains all the information which we discuss earlier. so our next objective is to extract the '.lef' file out of the '.mag' file. and next step is that extracted file could be placed into the picorv32a flow.
+
+you need to folow certain guideline while making standerd cells.the guidelines are
+
+    The input and output port must lie on the intersection of the verticle and horizontal tracks
+
+    The width of the satnderd cell should be odd multiple of the track pitch and the height should be odd multiple of track verticle pitch
+
+Now oprning the track file from the pdk/sky130/libs.tech /openlane/sky130_fd_sc_hd/track.info. where we get the info like this,
+
+![image](https://user-images.githubusercontent.com/123365842/216803115-1c0446d7-9d6f-4f04-9145-ca4ae9d4d909.png)
+
+so, the track is basically nothing but it is used during the routing stage.Rout will be go over the tracks. tracks are basically trases of matel layers.i.e., metal 1, matel 2, etc.
+
+PNR is a automated. so we need to specified, where from we want routs to go. this specification is given by tracks. here we can see that each of the tracks are placed at (0.23 0.46)um horizontaly and (0.17 0.34)um vertically for li1, metal 1, metal 2 layer.
+
+In layout, we can see that the ports are on the li1 layer. so we need to insure that the ports are on the intersection of the tracks or not. For that we have to cinvert the grid into the tracks. for that we have to first into the tracks file and the open the tckon window and type the "help grid" comand.
+
+![image](https://user-images.githubusercontent.com/123365842/216803148-e10d226d-cb2b-4894-bdcf-bcb9aa4ea509.png)
+
+Then again write comand according to the track file.
+
+![image](https://user-images.githubusercontent.com/123365842/216803184-e3028916-3e03-4ad1-8b05-7f6665fcc033.png)
+
+Let's see the changes in the layout.
+
+![image](https://user-images.githubusercontent.com/123365842/216803222-d0b7a3c6-f77d-45b3-b034-e3f53e7f4ea6.png)
+
+Here we can see that, as per the guideline the ports are placed at the intersection of the tracks.
+
+now, between the boundaries, there is 3 boxes are coverd. so our second requirment also satisfied here.
+Lab steps to convert magic layout to std cell LEF
+
+here already the port name and the port definationa is seted, if not seted the we have to set the definanation and the name of the port.
+
+As it parameters are set, we are ready to extract the 'LEF' file from the "mag" file. but before the extraction, let give the name to the cell by using tckon window.
+
+Now we can see this file in the vsdstdcellsdesign folder.
+
+![image](https://user-images.githubusercontent.com/123365842/216803238-a2def234-8928-4463-9199-cd36769034aa.png)
+
+Now, we open this file in the magic by using comand "magic -T sky130A.tech sky130_vsdinv.mag &".
+
+Now to extract the lef file we have to write the comand in the tckon window "lef write". so it will create a lef file and we can check it in the vsdstdcellsdesign folder.
+
+![image](https://user-images.githubusercontent.com/123365842/216803341-f874296f-cc70-48c9-a5b7-5799c510c485.png)
+
+Now, lef file is created and now next step is plug this lef file in picorv32a. before that we move our files to src folder where all the design files are available at one location.
+
+for that we are copiying this file in the src folder by 'cp' comand.
+Introduction to timing libs and steps to include new cell synthesis
+
+The basic idea is that we have to include our custom cell into openlane flow. and the first stage in the openlane is the synthesis.
+
+here, also we required library. so we copiying the library to the src folder.
+
+Before we do anything, we have to modified our congig.tcl file. so opening this file by "vim" comand and modifiying it.
+
+Now, start the new terminal and open the openlane by docker, make flow interactive and then add the package and then prep design with the privios run by the comand " prep -design pecorv32a -tag [last running time i.e.27-01_17-53] -overwrite".
+
+Now comes the deciding part. we have to see that the synthesis run and its maps our custom vsd inveter into this flow. so, run the synthesis.
+Introduction to delay tables
+Power Aware CTS
+
+If we make enable pin at logic '1' in the AND gate, the clock will propogatee to the AND gate. similarly, if we make enable pin at logic '0' in the OR gate, here also clock propogate to the OR gate.
+
+Similarly if we make enable pin at logic 'o' in the AND gate, gate will block the clock and same this will happend with the OR gate if we make enable pin at logic '1'.
+
+The advantage of this scenario is that, during this time period of the blocking the clocks, we can save lots of power in the clock tree. now the question is that how can we use this scenario in the clock tree.
+
+let say we have a clocktree like this given below,
+
+![image](https://user-images.githubusercontent.com/123365842/216803361-351419eb-b52c-43e5-8e1c-7e4f82fdcf6c.png)
+
+Here we spitted the load of the 4 FF into the 2 buffers and the load of the 2 buffers is given to the level 1 buffer. here assumptions are,
+
+    Assume c1=c2=c3=c4=25fF
+
+    Assume Cbuf1=Cbuf2=30fF
+
+    Total Cap at node 'A'=> 60fF
+
+    Total Cap at node 'B'=> 50fF
+
+    Total Cap at node 'C'=> 50fF
+
+We have done some observations here,
+
+    2 levels of buffering
+
+    At every level,each node driving same load
+
+    Identical buffer at same level
+
+so, here capacitance at the every node of the clock tree is not the same. it is varying. Now load is varying then input transition is also verying because the output load at the level 1 buffer is the input of the other buffers of level 2. so, we have variety of the delays. To capture it, we have delay tables.
+How delay tables are prepared?
+
+To prepare the delay table, the perticukar element is taken out of the circuit and saparetly verying the input transition and output load and according to the variation, we will charactorize the delay of the element and make the delay table frpm it.
+
+![image](https://user-images.githubusercontent.com/123365842/216803380-d9290f5b-8f6e-4d7e-9131-0dcf54db9bc8.png)
+
+# Delay table usage part 1
+
+Let's looks into the sample examples and making the table for Cbuf'1' and Cbuf'2',
+
+![image](https://user-images.githubusercontent.com/123365842/216803398-ef655a5d-4cd5-496f-b555-ba56ae00a302.png)
+
+let's take practical example on the circuit. we take 40psec as input transition on the level 1 buffer and as per assumption load is around 60fF. and delay is comes between x9 and x10. lets take x9' as the delay of the buffer of level 1.
+
+# Delay table usage part 2
+
+Next step is to calculate the delay of the buffers of level 2. And after that we can find the letancy at the 4 clock end points.
+
+now input transition is common for both the buffers. now assuming that the transition is around the 60psec and load at both the buffers is 50fF. so it will give the delay of y15.
+
+The total delay from input to the output is= x9' + y15.(here we are ignoring the delay of the wires). that means the skew at the any output point is zero.
+
+If load is not same at the every nodes, the skew will not be the zero.
+# Lab steps to configure synthesis settings to fix slack and include vsdinv
+
+After synthesis, we observed that the slack is nagative here. wns(worst negative slack)= -24.89 and tns(total negative slack)= -759.
+
+![image](https://user-images.githubusercontent.com/123365842/216803450-ba4dcad8-f8d8-4cf8-b26f-51830bfe46e2.png)
+
+let's do some modification here. for that opening the READme file from the /openlane/configuration/ less READme.md
+
+Now lets try to make balance between area and the delay of the synthesis by changing the stratagy. comand for checking the current strategy is "echo $::env(SYNTH_STRATEGY)", and comand for changing the stategy is "set ::env(SYMTH_STRATEGY) 1". by doing this area will increase the little but but timing will improve.
+
+Then checking the synth_bufferung and synth_sizing. if any one them is off then make it on by set the value of it by 1.
+
+Till here we not get slack 0. to make slack 0, we ahve to write comand "set ::env(SYMTH_STRATEGY) DELAY 0"
+
+After running synthesis we will get improved timing.
+
+![image](https://user-images.githubusercontent.com/123365842/216803574-fde2e029-b727-4b10-8e31-20551a19da9f.png)
+
+Next command for run is :
+
+set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
+
+add_lefs -src $lefs
+
+Then again run the synthesis.
+Timing analysis with ideal clocks using openSTA
+Setup timing analysis and introduction to flip-flop setup time
+Timing analysis (with ideal clock)
+
+we start with taking the ideal clock and we will do timing analysis for the ideal clock first.
+
+Let's start the setup analysis with the ideal clock(single clock). specifications of the clock is
+
+    clock frequency =1 GHz
+
+    clock period =1 nsec
+
+Let's take lainch Flop and Capture flop with clock. here clock tree is not built yet. so it is ideal scenario. here we have to do analysis between '0' and 'T'. with that assume that the delay of logic is 'θ'.
+
+![image](https://user-images.githubusercontent.com/123365842/216803594-ed5d041c-51c9-4923-a33c-948d7a03e052.png)
+
+Setup timing analysis says that θ<T. this condition should be neccessory for the the comninational logic work.
+
+Now let's introduce the practical scenario here. Opening the capture flop and it has two mux inside it.
+
+![image](https://user-images.githubusercontent.com/123365842/216803607-c010b7c6-327c-4f6f-9efb-9e41064495b5.png)
+
+The way flop work, it will shown by the timing graph like this,
+
+![image](https://user-images.githubusercontent.com/123365842/216803620-75f96664-9777-49cf-ac82-4ca39f214fd9.png)
+
+So, here mux 1 and mux 2 both have their own delay. these delay will restrict the combination delay to the requirment.
+
+Hence finite time 's' required before clk edge for 'D' to reach Qm.
+
+So, we can write that the internal delay of the MUX1 = set up time(S).
+
+So, now θ<T becomes θ<(T-S).
+Introduction to clock jitter and uncertainty
+
+Let's bring one more practical scenario here. clock is taking from the some clock source or PLL. So, because of some delay from the practical source of clock or PLL, clock pulse will not comes exacly at t=0 or at t=T. that in built variation of the clock is called jitter.
+
+![image](https://user-images.githubusercontent.com/123365842/216803631-ab68c6af-73ee-40cd-bbdf-88432e3a1d91.png)
+
+lets consider this uncertantity time(US) in consideration. So, now equation becomes like, θ<(T-S-US). Now assuming that 'S'=0.01ns and 'US'=0.09ns. by taking that, lets identify the timing path for our existing scenario. in our circuit stage 1 and stage 3 logic path has single clock.
+
+NOw, what we have to do is identify the combinational path delay for the given both logics.
+
+![image](https://user-images.githubusercontent.com/123365842/216803642-8a8065a7-b991-454f-b0f1-3cc8038fed4d.png)
+
+![image](https://user-images.githubusercontent.com/123365842/216803646-cccc3157-6808-4ef7-8e84-99ef1383cbc4.png)
+
+# Lab steps to configure OpenSTA for post-synth timing analysis.
+
+when we do CTS, CTS is a stage where, we add clock buffers along with clockpath and build the clock tree. so, actually we are changing the netlist. Along the running CTS, actually the netlist file also created. so, after running the CTS, we will see the new Verilog file here.
+
+Now, we see what is in the my_base.sdc file. 
+
+![image](https://user-images.githubusercontent.com/123365842/216803713-797766b9-eaf8-41e2-8fdc-f025ba7b4fd8.png)
+
+here, we can see the capacitor load and clock period and clock port etc.
+
+Now, to reduce the fanout we use the command is : "set ::env(SYNTH_MAX_FANOUT) 4" and then run the synthesis.
+
+but here also slack doesn't reduce.
+
+Now next step is run floorplan, place IO, do global placement or detail placement and genrate pdn file the run the cts by following comands.
+
+inut_floorplan
+
+place_io
+
+global_placement_or
+
+detailed_placement
+
+tap_decap_or
+
+detailed_placement
+
+After running the floorplaning and done the global placement we get positive slack.
+
+![image](https://user-images.githubusercontent.com/123365842/216803743-14dec3b7-fe77-4330-9aab-ce16d25de350.png)
+
+Write the command is:magic -T /home/kunalg123/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.placement.def &
+
+![image](https://user-images.githubusercontent.com/123365842/216803793-ad79f48b-f3c8-4ccb-b6bb-7023cd4aabfb.png)
+
+Clock tree synthesis TritonCTS and signal integrity
+Clock tree routing and buffering uisng H-Tree algorithm
+what is clock tree synthesis?
+
+As shown in below, figure, let's connect clk1 to FF1 & FF2 of stage 1 and FF1 of stage 3 and FF2 of stage 4 with out any rules.
+
+![image](https://user-images.githubusercontent.com/123365842/216803806-9992ec0f-2540-4423-90e8-b9f5bdb2e549.png)
+
+Now, let's see the problem with this clock Rout. let us say time required to reach the FF1 and FF2 of stage 1 are t1 and t2 for clock1. so, we can say that t2-t1= skew (ideally skew=o).
+
+![image](https://user-images.githubusercontent.com/123365842/216803824-e3dcaf72-6beb-42cd-814d-08819d518865.png)
+
+To make, skew to be 0, this rout definatly not help. so, we can say that what we built the tree is "BAD TREE". so, the concept of H-tree comes out. with the Mid point strategy, H-tree form.
+
+![image](https://user-images.githubusercontent.com/123365842/216803837-e435d92d-73d9-409b-9cde-d21f22ed8efd.png)
+
+Next thing is clock tree synthesis (buffering).as we see in the clockk tree and we observed that clock has to travel through all wires and it will charge all capacitor which are comming in the path of this wire.
+
+The problem occurse due to the charging the capacitor is signal inntigrity problem because of transition of signals. solution of this problem is add the repeaters here. the repaters are the similar as what we use in the data path but the main difference is, here repeater has equal rise and fall time.
+
+![image](https://user-images.githubusercontent.com/123365842/216803853-eb062cb7-4b21-4ebf-bda3-6a61e746dc15.png)
+
+Crosstalk and clock net shielding
+
+We build the clock tree in a manners that the skew becomes zero between launch Flop and capture flop. but if accedently any crosstalk heppense then everything what we had design is detoriated.
+
+Let take the first clock net and protect it by shielding. here we protect the clock network from outside world. if the protection is not there then problems like glitch and delta delay is heppens.
+
+The glitch is heppence because of Coupling capacitance between the wires.
+
+![image](https://user-images.githubusercontent.com/123365842/216803863-255ee0a2-f013-4fb5-8050-9ab39fd64bb7.png)
+
+The shielding is the technique, by which we can protect the net from these problems. In a shielding, we put wire between the other teo wire where coupling capacitance is generate. This extra wire is grounded or connected to VDD.
+
+Now, let's see about the delta delay.
+
+![image](https://user-images.githubusercontent.com/123365842/216803874-2a0ef12e-5c1f-4244-a0a9-ba5a4db504cb.png)
+
+# Lab step to run CTS using TritonCTS
+
+Now next step is CTS. for that write the command: "run_cts".
+
+![image](https://user-images.githubusercontent.com/123365842/216803894-bf7ce12f-fe5c-43b4-ac02-42ed5157535c.png)
+
+In CTS stage the buggers are added in the paths. so, it will modifiying the netlist. so, if we go in the synthesis folfer and check the files, where cts.v file will avaiilable and this file contains the added buffers.
+Lab steps to verify CTS runs
+
+we have run CTS.Now before we goes into the post cts flow, we need to know that the actual meaning of the "run" command. This is the proc of tcl file. so, lets see, from where, openlane take this procs. for that we need to goes into the openlane and then goes into scripts and then check the "tcl_commands". in this file tcl commands are there for every stages what we have run till now. so let's see the "cts.tcl" file.
+
+![image](https://user-images.githubusercontent.com/123365842/216803923-c9490ee3-bccd-48cd-bd1a-202cc36ccf2e.png)
+
+here we can see the many procs are there. so here we can see the procs are run during the CTS run.
+
+![image](https://user-images.githubusercontent.com/123365842/216803943-98eeb839-9c12-4be5-9b06-0ac2eaeeeb69.png)
+
+so when we run the cts in the flow, basically it do this things.
+
+first it run the tritonCTS by givin total information.
+
+then it set the value of timer.
+
+Then it goes for open the openroad.
+
+if we check the openroad folder, at that directory "or.files" are available which was runs in the OPENROAD EDA tool.
+
+Now les's check the "or_cts.tcl" file. inside this we can see the few switches.
+
+![image](https://user-images.githubusercontent.com/123365842/216803982-596bd2c6-638f-4d61-82f9-5e385b56ff96.png)
+
+Now lets check what the library does. For this command is "echo ::env(LIB_TYPICAL)"
+
+Now checking the clock period of this by command: "echo $::env(SYNTH_MAX_TRAN)"
+
+So, clock period seted as 2.473 nsec.
+
+Then checking the max cap value, by command : "echo $::env(CTS_MAX_CAP)". and it is setted as 1.53169
+
+Now checking the branch buffer cells by command :"echo $::env(CTS_CLK_BUFFER_LIST)". and these are the buffer cells are listed there "sky130_fd_sc_hd__clkbuf_1 sky130_fd_sc_hd__clkbuf_2 sky130_fd_sc_hd__clkbuf_4 sky130_fd_sc_hd__clkbuf_8".
+
+And last cheching the root buffer by command: "echo $::env(CTS_ROOT_BUFFER)". So, we find that this "sky130_fd_sc_hd__clkbuf_16 " buffer is root buffer.
+
+![image](https://user-images.githubusercontent.com/123365842/216804066-b9879d42-2a80-45a2-a3d3-d18d5013ba70.png)
+
+# Timing analysis with real clocks using openSTA
+# Setup timing analysis using real clocks
+
+With real clock, circuit looks littel bit different then ideal clock. Here the bufferes and wires are added to the circuts.
+
+Here, due to buffer, clock signals are not reaching the flop at t=0. it will reach at t=0+(delay of buffer 1 and 2).Now equation change to (θ+1+2)<(T+1+3+4).
+
+![image](https://user-images.githubusercontent.com/123365842/216804079-300b0560-1db8-4735-a1bc-7c247b92a98b.png)
+
+Let's called "1+2"=∆1 and "1+3+4"=∆2 and (∆1-∆2)=skew
+
+![image](https://user-images.githubusercontent.com/123365842/216804106-38613228-f899-49ea-80e6-8e2862aef311.png)
+
+And here also, we have to consider the propogation skew (s) and uncertainty delay (US). so final equaltion becomes like, (θ+∆1)<(T+∆2-S-US).
+
+we can also say that (θ+∆1)= data arrival time and (T+∆2-S-US)=data required time.
+If (Data required time)- (Data arrival time) = +ve then it is fine. If it is -Ve then it is called 'slack'.
+Hold timing analysis
+
+It is littel bit different then setup timing analysis. here we are sending the first pulse to the both launch FLop and capture flop.
+
+Hold condition state that, Hold time (H)< combinational delay (θ). So, (θ>H).
+
+![image](https://user-images.githubusercontent.com/123365842/216804126-75940eeb-3eae-4d77-823e-eb5dc5bc6448.png)
+
+Hence, finite time 'H' required for 'Qm' to reach Q i.e., internal delay of mux2= hold time.
+
+Now, if we add the real time clock, the equation will be change. now equation becomes (θ+∆1)>(H+∆2).
+
+![image](https://user-images.githubusercontent.com/123365842/216804143-64867df3-d056-4889-9081-d7a2e73fe470.png)
+
+# Hold time analysis with real clock
+
+Now here also adding the Unsetainty delay(UH) value due to jitter. so, equation becomes like, (θ+∆1)>(H+∆2+UH).
+
+we can also say that (θ+∆1)= data arrival time and (H+∆2+UH)=data required time.
+
+If (Data arrival time) -(Data required time)= +ve then it is fine. If it is -Ve then it is called 'slack'.
+
+Now, applying all these things in out network.
+
+![image](https://user-images.githubusercontent.com/123365842/216804156-9ade4f90-c8d6-44df-b67e-c250db31cab4.png)
+
+Lab steps to analyze timing with real clock using OpenSTA
+
+let's open the OPENROAD tool in the flow by "openroad" command.
+
+our objective is to do analysis of the clock tree.
+
+we are analysin this in the OpenROAD because OpenSTA is already built in the OpenROAD. In OpenROAD the timing analysis is done in a different way. first we have to create "db" and "db" is created in a "lef" and "def" file.
+
+Now let's create the DB. To create the DB, first we have to read the lrf file by comand "% read_lef /openLANE_flow/designs/picorv32a/runs/29-01_22-23/tmp/merged.lef".
+
+Then we read the "def" file by command: "read_def /openLANE_flow/designs/picorv32a/runs/29-01_22-23/results/cts/picorv32a.cts.def".
+
+NOw to create the DB write the command "write_db pico_cts.db"
+
+NOW read this db file by command "read_db pico_cts.db"
+
+then read the verilog file by applying the command "read_verilog /openLANE_flow/designs/picorv32a/runs/29-01_22-23/results/synthesis/picorv32a.synthesis_cts.v"
+
+then read the library (max) by this command:"read_liberty -max $::env(LIB_FASTEST)".
+
+similarly read the library (min) by this command: "read_liberty -min $::env(LIB_SLOWEST)".
+
+Now read the sdc file by this command: "read_sdc /openLANE_flow/designs/picorv32a/src/my_base.sdc"
+
+now set the clocks by this command:"set_propagated_clock [all_clocks]"
+
+there reports the checks by this
+
+command: "report_checks -path_delay min_max -format full_clock_expanded -digits 4".
+
+so after running this we can see that the slack is positive for hold and setup both. and also we can notice the data required time and data arroval time also.
+
+So, the Hold slack = 1.6982nsec because here we can see that (arrivel time) >(required time).
+
+![image](https://user-images.githubusercontent.com/123365842/216804204-79de5d5c-f63a-438e-91d2-2454c5aea532.png)
+
+NOw setup slack = 0.9457nsec because here we can see that (required time)>(arrival time).
+
+# Lab steps to execute openSTA with right timing libraries and CTS assignment
+
+TritonCTS is right now built according to optimize fully according to one corner and we had bulid the clock tree for typical corner. and library also min and max. so we made tree according to typical corner but we analize it according to one corner. so, analysis become incorrect.
+
+so, first we exits from the openroad by using "exit" command and we have to include the typical library for typical analysis. for that we have to open the "openroad" again and add this typical library. now we don't need to add lef and def file here. now commands for the adding a file is:
+
+read_db pico_cts.db
+
+read_verilog /openLANE_flow/designs/picorv32a/runs/29-01_22-23/results/synthesis/picorv32a.synthesis_cts.v
+
+read_liberty $::env(LIB_SYNTH_COMPLETE)
+
+link_design picorv32a
+
+read_sdc /openLANE_flow/designs/picorv32a/src/my_base.sdc
+
+set_propagated_clock [all_clocks]
+
+report_checks -path_delay min_max -format full_clock_expanded -digits 4
+
+slack for typical coirner= 0.2429nsec
+
+![image](https://user-images.githubusercontent.com/123365842/216804238-a0762d3d-863f-4bdb-8da8-ec1767452448.png)
+
+Now checking the branch buffer cells by command :"echo $::env(CTS_CLK_BUFFER_LIST)". and these are the buffer cells are listed there "sky130_fd_sc_hd__clkbuf_1 sky130_fd_sc_hd__clkbuf_2 sky130_fd_sc_hd__clkbuf_4 sky130_fd_sc_hd__clkbuf_8".
+
+when openlane are making the CTS, at that time this buffers are place in the clock path to meet the skew value. and we always want skew value is maximum to the 10% of clock period.
+
+
+# Day 5 -Final steps to build power distribution network
+# Routing and design rule check(DRC)
+# Introduction to Maze Routing A lee As Algorithm
+
+Final stage in the physical design is the routing and DRC stage.
+
+Routing. by the name it is says that rout means make physical contact between Din1 and FF1 od stage 1. but algorithm wise,it understand that Din1 is the source and FF1 input pin is the target. so, algorthm has to find the best possible solution to connect the Din1 and FF1.
+
+For that we use Maze Routing and Lee's algorithm. let's try to connect Block 1 and block 2 of stage 3. there are varies mathod to connect these blocks but we need best solution for the rout or connection. To understand that, we remove all other things.
+
+Algorithm create the routing gird at backend. here algirithm create two points. one is source and other is target. Now by using this routing grid, algorithm find the best way of routing. algorithm marks the adgecent grids of source. similarly again it will find the adgecent grids of the previos grids.similarly this process will runs continuosly.
+
+![image](https://user-images.githubusercontent.com/123365842/216804273-c81caa8b-c544-401b-979e-9e6b1964e104.png)
+
+# lee's algorithm conclusion.
+
+The extanding process of adgecent grids are contionuous till it reaches to the target
+
+![image](https://user-images.githubusercontent.com/123365842/216804322-e2cce4de-2142-4cfd-90a2-037c6c97b2b6.png)
+
+there is many ways to reach the target. but the best possible way is 'L' shaped way.
+
+![image](https://user-images.githubusercontent.com/123365842/216804330-5c47d33f-ee80-4f63-bf9f-51fc243de086.png)
+
+lets take another example for this routing.
+
+![image](https://user-images.githubusercontent.com/123365842/216804343-3aaa8b39-7dbb-4cf9-8c7a-a96cbdf42f0f.png)
+
+Now, we reouted all the blocks and the circuits looks like this,
+
+![image](https://user-images.githubusercontent.com/123365842/216804352-1e0d5323-2664-474f-8ccb-509c44af8fbd.png)
+
+# DRC(Design Rule check)
+
+While doing the routing, we need to follow certain rules for that. this is called DRC cleaning.
+
+Lets take two parallel wires from the circuit for example,
+
+![image](https://user-images.githubusercontent.com/123365842/216804365-8faf1481-851a-4e7b-a2ca-b0985c1f4419.png)
+
+
+    Rule 1
+
+Width of the wire should be minimum that derived from the optical wavelenth of lithography technique applied.
+![image](https://user-images.githubusercontent.com/123365842/216804380-ca2b8fcb-8f25-4d92-8d66-c27b82784210.png)
+
+    Rule 2
+    
+The minimum pitch between two wire shold be this much.
+
+![image](https://user-images.githubusercontent.com/123365842/216804419-a58adfc0-1381-45e8-bc15-68014000aa73.png)
+
+    Rule 3
+
+The wire spacing between two wires should be this much. 
+
+![image](https://user-images.githubusercontent.com/123365842/216804436-362e54cb-87c7-4f0b-ab57-5d689c6c9fe1.png)
+
+Let's take other part for understand the rules. basic problem in this types of wire is the signal short.
+
+![image](https://user-images.githubusercontent.com/123365842/216804455-adffda41-41eb-45ee-b367-9b5f5dbc021d.png)
+
+Solution of this signal short problem is take one of the wire and put it on the other metal layer. usually upper metal is wider than the lower metal.
+
+![image](https://user-images.githubusercontent.com/123365842/216804475-466c3190-6631-4242-8aba-c68c859cf470.png)
+
+After this solution, we add two new DRC rules should be check.
+
+    Rule 1
+
+via width should be some minimum value. 
+
+![image](https://user-images.githubusercontent.com/123365842/216804494-986c41b7-1457-4161-8aff-6d22839cbb41.png)
+
+
+    Rule 2
+
+Via spacing should be minimum this. 
+![image](https://user-images.githubusercontent.com/123365842/216804522-06c68b6c-b423-4996-868f-863280dd9713.png)
+
+Next step is paracitic Extraction. so, the wire will get some resistance and capacitance value.
+
+![image](https://user-images.githubusercontent.com/123365842/216804540-df30c67a-66de-46ba-913b-b07f9c2dfce7.png)
+
+# Power distribution network and routing
+# Leb steps to build power distribution network
+
+IS in case, our terminal is delected by some cause, the if we want the previos terminal once again then this steps should be followed:
+
+    docker
+
+    ./flow.tcl -interactive
+
+    package require openlane 0.9
+
+    prep -design picorv32a -tag [run file name i.e., 20-01_22-23]
+
+Now to check the which was the last stage we perorm, the command is:"echo $::env(CURRENT_DEF)".
+
+So, till now we have done CTS and now we are going to do the routing. but before routing we have to generate the PDN(power distribution network)file. for that command is: "gen_pdn".
+
+
+
+
+Here we can see the total number of nodes on the net VGND and it is also says that Grid matrix is created successfully. here total connection between all PDN nodes establish in the net VGND.
+
+Now, till here we have picorv32a chip, and it needs the power. so it will get power from VDD and GND pads. From the pads, power goes to the tracks and from the tracks, the cells get power.
+
+# Lab steps from power straps to standerd cell power
+
+To understan this, take an example here,
+
+![image](https://user-images.githubusercontent.com/123365842/216804573-9de6ca4b-adc7-4d08-b60b-cd249b689c52.png)
+
+In this figure, the green box is available is let say picorv32a chip. And the yellow, red and blue boxes which are the shown on the outside of the frame are the I/O pins and the power and ground pads. in this pads, the corner ones are called corner pads.
+
+Red pads are the power pads and Blue pads are ground pads.
+
+Power is transfered to the rings from the pads through Via which is shown by black dots on the cross section points of the ring and pads.
+
+Now we need to insure that the power is transfered from the ring to the chip. for that we have vertiocal and horizontal tracks which are also shown by the red and blue color.
+
+NOw, we need to supply power to the standerd cell (Which are shown by rectangular white boxes) from these tracks. this is done by horizontal small connections shown in the figure.
+
+So, in a lab we have done this all the things till power distribution.
+
+Now next and the final step is routing.
+
+# Basic and Global detailed routing and configure TritonRoute
+
+Now current def.file is change to pdn.def from the cts.def. pdn.def file is now in the "runs/29-01_22-23/tem/floorplan/pdn.def".
+
+In the routing process we are focusing on the routing strategy. there are 5 routing strategies are there. 0,1,2,3 and 14. routing is done in the TritonRoute engine. we have to specifies the strategy for the routing. for example if we ser the strategy to 14 then "TritonRoute14" strategy is used.
+
+If we set the TritonRouting strategy to "0" then it want converge to a 0 TRC routing. but because of this we will improve in the memory requirement and run time. if we use TritonRoute14 then the run time will be approximate 1 hours. but in the TritonRoute0 it will be around the 30 minutes. here we use the "TritonRoute0". so in our flow first we check the routing strategy by the command "echo $::env(ROUTING_STRATEGY)". if it is "0" then it is fine, otherwise we have to change the strategy to "0".
+
+Now the last thing remains is routing. for that command is :"run_routing".
+
+The routing process is very complex.So, total routing is devided into two part.
+
+    Fast route (Global route)
+
+    Detailed route
+
+![image](https://user-images.githubusercontent.com/123365842/216804613-2a84f3b2-caad-4066-8b9a-163ccf24c48d.png)
+
+In the Global route, the routing region is devided into the rectangular grids cells as shown in the figure. and it is represented as 3D routing graph. Global route is done by FAST route engine.The detailed route is done by TritonRoute engine.
+
+As shown in the figure, A,B,C,D are four pins which we want to connects through routing. and this whole image of A,B,C,D show the nets.
+
+Now, the routing is successfully done.
+
+# Tritinroute features
+# TritonRoute feature 1 -Honors pre-processed route guid
+
+![image](https://user-images.githubusercontent.com/123365842/216804638-04daa0ee-115e-4b06-9ed6-437e0b11f1bf.png)
+
+
+    It performs initial detail route.
+
+    It attempts as much as possible to route within route guides.
+
+requierment of processed guides are 1)should have within unit lenth 2)should be in the preferred direction. 
+
+![image](https://user-images.githubusercontent.com/123365842/216804645-0c5887ec-9464-47c3-9eca-f4c9801ae9d7.png)
+
+
+    Assumes route guides for each net satisfy inter-guide connectivity.
+
+If two guides are connected then 1) they are on the same metal layer with touching edges. 2) they are on the neighbouring metal layers with a nonzero vertically overlapped area.
+
+    Assumes route guides for each net satisfy inter-guide connectivity.
+
+# TritonRoute feature 2 & 3 - inter-guide connectivity and intra-layer & inter -layer routing
+
+Each unconnected terminal. i.e, poin of a standerd-cell instance should have its pin shape overlapped by a route guide.
+
+![image](https://user-images.githubusercontent.com/123365842/216804657-f438e693-0a02-4a06-b5cb-e7054c1a1f98.png)
+
+Here we can see that black dots are pins of the cells and it is overlapped by route guide. if you have pins on the intersection of the vertical and horizontal tracks that will ensure that it will be overlapped by route guides.
+
+# Intra-layer parallel and inter-layer sequential panel routing
+
+Intra layer means within the layers and inter layear means between the layers.
+
+![image](https://user-images.githubusercontent.com/123365842/216804672-cc7d783d-dca8-4a36-9f3b-c5df4367fe60.png)
+
+In this figure we can see the 4 layers of metal. each of these layers are devided in to the "--" lines. lets focus on metal 2 layer. here we assume the routing direction vertical. These "--" lines are called pannels. each pannels assigns the routing guides. here we can see the blue arrows. here routing is heppenes in the even index. it means that intra layer parallel routing. first it is heppenes in the even index and the it will heppen in the odd index. but it is heppening in the parallel in this perticular layer.
+
+So, the (a) figure shows the parallel routing of panels on M2.In (b) figure, we can see the parallel routing of even panels on M3 and (c) shows the parallel routing of odd panels on M3.
+
+# TritonbRoute method to handle connectivity
+
+    INPUTS: LEF
+
+    OUTPUTS:detailed routing solution with optimized wore-length and via count
+
+    CONSTRAINTS:Route guide honouring, connectivity constraonts and design rukes
+
+Now we have to defined the space where detailed routing take spaced.
+
+# Handling connectivity
+
+![image](https://user-images.githubusercontent.com/123365842/216804700-e51b5458-6f3a-4c05-9e1a-b105a24c55d8.png)
+
+# To handle the connectivity, two concepts comes into the picture,
+
+    Access point:An on-gride point on the metal layer of the route guide, and is used to connect to lower-layer segments, upper-layer segments, pins or IO ports.
+
+    Access point cluster (APC): A union of all access points derived from same lower-layer segment,upper-layer guide, a pin or an IO port
+
+Here in the figure shown above, the illustration of access points:
+
+(a)To a lower-layer segment
+
+(b)To a pin shape
+
+(c)To upper layer
+
+# Routing topology algorithm and final files list post-route
+
+![image](https://user-images.githubusercontent.com/123365842/216804721-9c772e51-5763-4b36-8b4f-cbaeb89cd9e1.png)
+
+The algorithm says that for each APCs we have to find the cost associated with it and we have to do minimum spaning tree betweem the APCs and the cost. finally the conclusion of the algorithm is that we have to find the minimul and the most optimal poits between two APCs.
+
+Now, remaning things is the post routing STA analysis. for that the first goal is to extract the perasetic (SPEF). This SPEF extraction is done outside the openlane because openlane does not have SPEF extraction tool.
+
+The .spef file can be found under the routing folder under the results folder.
+
+![image](https://user-images.githubusercontent.com/123365842/216804731-d474e982-d1a5-4409-bd48-a0f2da9e8eb6.png)
+
+The following command can be used to stream in the generated GDSII file.
+
+"run_magic"
+
+Now the gds file will be generated and it is stored in the magic folder under results folder.
+
+![image](https://user-images.githubusercontent.com/123365842/216804744-9aea4e9c-2a52-4c77-99bb-edbfe6209362.png)
+
+And the generated layout is,
+
+![image](https://user-images.githubusercontent.com/123365842/216804756-6e2bcbae-9f77-4f33-82cf-a6066c5da0e2.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
