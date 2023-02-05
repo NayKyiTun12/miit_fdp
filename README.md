@@ -2549,7 +2549,7 @@ Till here we not get slack 0. to make slack 0, we ahve to write comand "set ::en
 
 After running synthesis we will get improved timing.
 
-![image](https://user-images.githubusercontent.com/123365842/216803574-fde2e029-b727-4b10-8e31-20551a19da9f.png)
+![image](https://user-images.githubusercontent.com/123365842/216840224-aa6ad34d-322c-4eb3-9027-07f32a3419be.png)
 
 Next command for run is :
 
@@ -2611,7 +2611,7 @@ when we do CTS, CTS is a stage where, we add clock buffers along with clockpath 
 
 Now, we see what is in the my_base.sdc file. 
 
-![image](https://user-images.githubusercontent.com/123365842/216803713-797766b9-eaf8-41e2-8fdc-f025ba7b4fd8.png)
+![image](https://user-images.githubusercontent.com/123365842/216840088-9f3750ec-ecb4-4106-8ae3-4c91d33ae970.png)
 
 here, we can see the capacitor load and clock period and clock port etc.
 
@@ -2635,11 +2635,11 @@ detailed_placement
 
 After running the floorplaning and done the global placement we get positive slack.
 
-![image](https://user-images.githubusercontent.com/123365842/216803743-14dec3b7-fe77-4330-9aab-ce16d25de350.png)
+![image](https://user-images.githubusercontent.com/123365842/216839988-a1e95dc7-d784-48ec-b43e-f6faddaee964.png)
 
 Write the command is:magic -T /home/kunalg123/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.placement.def &
 
-![image](https://user-images.githubusercontent.com/123365842/216803793-ad79f48b-f3c8-4ccb-b6bb-7023cd4aabfb.png)
+![image](https://user-images.githubusercontent.com/123365842/216840007-de38e7a6-567e-4c9e-b75e-173cd4336207.png)
 
 Clock tree synthesis TritonCTS and signal integrity
 Clock tree routing and buffering uisng H-Tree algorithm
@@ -2683,18 +2683,19 @@ Now, let's see about the delta delay.
 
 Now next step is CTS. for that write the command: "run_cts".
 
-![image](https://user-images.githubusercontent.com/123365842/216803894-bf7ce12f-fe5c-43b4-ac02-42ed5157535c.png)
+![image](https://user-images.githubusercontent.com/123365842/216839269-36c9cdb2-e38e-42fb-8f2c-89ec9c0e3f4c.png)
 
 In CTS stage the buggers are added in the paths. so, it will modifiying the netlist. so, if we go in the synthesis folfer and check the files, where cts.v file will avaiilable and this file contains the added buffers.
-Lab steps to verify CTS runs
+
+# Lab steps to verify CTS runs
 
 we have run CTS.Now before we goes into the post cts flow, we need to know that the actual meaning of the "run" command. This is the proc of tcl file. so, lets see, from where, openlane take this procs. for that we need to goes into the openlane and then goes into scripts and then check the "tcl_commands". in this file tcl commands are there for every stages what we have run till now. so let's see the "cts.tcl" file.
 
-![image](https://user-images.githubusercontent.com/123365842/216803923-c9490ee3-bccd-48cd-bd1a-202cc36ccf2e.png)
+![image](https://user-images.githubusercontent.com/123365842/216839792-ed28336e-054c-415e-a29f-8718d350c8a4.png)
 
 here we can see the many procs are there. so here we can see the procs are run during the CTS run.
 
-![image](https://user-images.githubusercontent.com/123365842/216803943-98eeb839-9c12-4be5-9b06-0ac2eaeeeb69.png)
+![image](https://user-images.githubusercontent.com/123365842/216839389-94498366-f0b4-41e9-aee0-968734b5b3ae.png)
 
 so when we run the cts in the flow, basically it do this things.
 
@@ -2708,7 +2709,7 @@ if we check the openroad folder, at that directory "or.files" are available whic
 
 Now les's check the "or_cts.tcl" file. inside this we can see the few switches.
 
-![image](https://user-images.githubusercontent.com/123365842/216803982-596bd2c6-638f-4d61-82f9-5e385b56ff96.png)
+![image](https://user-images.githubusercontent.com/123365842/216839486-044849cd-ae6f-4d93-8e8c-b7dd4fe130b2.png)
 
 Now lets check what the library does. For this command is "echo ::env(LIB_TYPICAL)"
 
@@ -2722,7 +2723,7 @@ Now checking the branch buffer cells by command :"echo $::env(CTS_CLK_BUFFER_LIS
 
 And last cheching the root buffer by command: "echo $::env(CTS_ROOT_BUFFER)". So, we find that this "sky130_fd_sc_hd__clkbuf_16 " buffer is root buffer.
 
-![image](https://user-images.githubusercontent.com/123365842/216804066-b9879d42-2a80-45a2-a3d3-d18d5013ba70.png)
+![image](https://user-images.githubusercontent.com/123365842/216838943-04bace41-09f3-44a2-9ff8-d8e2a481c6e8.png)
 
 # Timing analysis with real clocks using openSTA
 # Setup timing analysis using real clocks
@@ -2801,7 +2802,7 @@ so after running this we can see that the slack is positive for hold and setup b
 
 So, the Hold slack = 1.6982nsec because here we can see that (arrivel time) >(required time).
 
-![image](https://user-images.githubusercontent.com/123365842/216804204-79de5d5c-f63a-438e-91d2-2454c5aea532.png)
+![image](https://user-images.githubusercontent.com/123365842/216839090-73f8a6d4-5781-4e8f-a161-f8e9a8660bcf.png)
 
 NOw setup slack = 0.9457nsec because here we can see that (required time)>(arrival time).
 
@@ -2827,7 +2828,7 @@ report_checks -path_delay min_max -format full_clock_expanded -digits 4
 
 slack for typical coirner= 0.2429nsec
 
-![image](https://user-images.githubusercontent.com/123365842/216804238-a0762d3d-863f-4bdb-8da8-ec1767452448.png)
+![image](https://user-images.githubusercontent.com/123365842/216839124-f70f3538-67e0-40f7-993e-1f60f2bfce69.png)
 
 Now checking the branch buffer cells by command :"echo $::env(CTS_CLK_BUFFER_LIST)". and these are the buffer cells are listed there "sky130_fd_sc_hd__clkbuf_1 sky130_fd_sc_hd__clkbuf_2 sky130_fd_sc_hd__clkbuf_4 sky130_fd_sc_hd__clkbuf_8".
 
@@ -2935,8 +2936,7 @@ Now to check the which was the last stage we perorm, the command is:"echo $::env
 
 So, till now we have done CTS and now we are going to do the routing. but before routing we have to generate the PDN(power distribution network)file. for that command is: "gen_pdn".
 
-
-
+![image](https://user-images.githubusercontent.com/123365842/216838414-2dec05cd-da9f-403d-8981-4411a0ca39fc.png)
 
 Here we can see the total number of nodes on the net VGND and it is also says that Grid matrix is created successfully. here total connection between all PDN nodes establish in the net VGND.
 
@@ -2946,7 +2946,7 @@ Now, till here we have picorv32a chip, and it needs the power. so it will get po
 
 To understan this, take an example here,
 
-![image](https://user-images.githubusercontent.com/123365842/216804573-9de6ca4b-adc7-4d08-b60b-cd249b689c52.png)
+![image](https://user-images.githubusercontent.com/123365842/216838375-46071a94-0908-434a-99be-1398736bc4c5.png)
 
 In this figure, the green box is available is let say picorv32a chip. And the yellow, red and blue boxes which are the shown on the outside of the frame are the I/O pins and the power and ground pads. in this pads, the corner ones are called corner pads.
 
@@ -2985,6 +2985,8 @@ In the Global route, the routing region is devided into the rectangular grids ce
 As shown in the figure, A,B,C,D are four pins which we want to connects through routing. and this whole image of A,B,C,D show the nets.
 
 Now, the routing is successfully done.
+
+![image](https://user-images.githubusercontent.com/123365842/216838203-58c360dc-3184-4223-bb91-6253318a7f56.png)
 
 # Tritinroute features
 # TritonRoute feature 1 -Honors pre-processed route guid
@@ -3062,7 +3064,7 @@ Now, remaning things is the post routing STA analysis. for that the first goal i
 
 The .spef file can be found under the routing folder under the results folder.
 
-![image](https://user-images.githubusercontent.com/123365842/216804908-609d0e14-abd4-47c2-b718-a490f665946e.png)
+![image](https://user-images.githubusercontent.com/123365842/216838116-e07a8c03-182a-43c2-abc8-51829cda6556.png)
 
 The following command can be used to stream in the generated GDSII file.
 
@@ -3070,11 +3072,12 @@ The following command can be used to stream in the generated GDSII file.
 
 Now the gds file will be generated and it is stored in the magic folder under results folder.
 
-![image](https://user-images.githubusercontent.com/123365842/216804889-57895446-d4f9-4bc6-b264-97e38409fb84.png)
+![image](https://user-images.githubusercontent.com/123365842/216838092-e5e865ac-50a1-4508-925d-030194f05d58.png)
 
 And the generated layout is,
 
-![image](https://user-images.githubusercontent.com/123365842/216804883-b98a8c47-6095-4669-8b63-5209c81748ca.png)
+![image](https://user-images.githubusercontent.com/123365842/216838080-ee4e6d3b-5282-4593-b074-f9e5bba4e2c5.png)
+
 
 
 
