@@ -3011,15 +3011,14 @@ If two guides are connected then 1) they are on the same metal layer with touchi
 
 Each unconnected terminal. i.e, poin of a standerd-cell instance should have its pin shape overlapped by a route guide.
 
-![image](https://user-images.githubusercontent.com/123365842/216804657-f438e693-0a02-4a06-b5cb-e7054c1a1f98.png)
+![image](https://user-images.githubusercontent.com/123365842/216804965-4abcfe57-8c90-4e0d-a612-c9c848150dfe.png)
 
 Here we can see that black dots are pins of the cells and it is overlapped by route guide. if you have pins on the intersection of the vertical and horizontal tracks that will ensure that it will be overlapped by route guides.
 
 # Intra-layer parallel and inter-layer sequential panel routing
 
 Intra layer means within the layers and inter layear means between the layers.
-
-![image](https://user-images.githubusercontent.com/123365842/216804672-cc7d783d-dca8-4a36-9f3b-c5df4367fe60.png)
+![image](https://user-images.githubusercontent.com/123365842/216804955-128cece7-5749-46c0-a113-17b229cbbd05.png)
 
 In this figure we can see the 4 layers of metal. each of these layers are devided in to the "--" lines. lets focus on metal 2 layer. here we assume the routing direction vertical. These "--" lines are called pannels. each pannels assigns the routing guides. here we can see the blue arrows. here routing is heppenes in the even index. it means that intra layer parallel routing. first it is heppenes in the even index and the it will heppen in the odd index. but it is heppening in the parallel in this perticular layer.
 
@@ -3037,7 +3036,7 @@ Now we have to defined the space where detailed routing take spaced.
 
 # Handling connectivity
 
-![image](https://user-images.githubusercontent.com/123365842/216804700-e51b5458-6f3a-4c05-9e1a-b105a24c55d8.png)
+![image](https://user-images.githubusercontent.com/123365842/216804935-f92aeaff-e791-4dfe-914d-127bac150ae1.png)
 
 # To handle the connectivity, two concepts comes into the picture,
 
@@ -3055,7 +3054,7 @@ Here in the figure shown above, the illustration of access points:
 
 # Routing topology algorithm and final files list post-route
 
-![image](https://user-images.githubusercontent.com/123365842/216804721-9c772e51-5763-4b36-8b4f-cbaeb89cd9e1.png)
+![image](https://user-images.githubusercontent.com/123365842/216804922-de0c8901-d30b-4987-8502-bf060e93c882.png)
 
 The algorithm says that for each APCs we have to find the cost associated with it and we have to do minimum spaning tree betweem the APCs and the cost. finally the conclusion of the algorithm is that we have to find the minimul and the most optimal poits between two APCs.
 
@@ -3063,7 +3062,7 @@ Now, remaning things is the post routing STA analysis. for that the first goal i
 
 The .spef file can be found under the routing folder under the results folder.
 
-![image](https://user-images.githubusercontent.com/123365842/216804731-d474e982-d1a5-4409-bd48-a0f2da9e8eb6.png)
+![image](https://user-images.githubusercontent.com/123365842/216804908-609d0e14-abd4-47c2-b718-a490f665946e.png)
 
 The following command can be used to stream in the generated GDSII file.
 
@@ -3071,11 +3070,11 @@ The following command can be used to stream in the generated GDSII file.
 
 Now the gds file will be generated and it is stored in the magic folder under results folder.
 
-![image](https://user-images.githubusercontent.com/123365842/216804744-9aea4e9c-2a52-4c77-99bb-edbfe6209362.png)
+![image](https://user-images.githubusercontent.com/123365842/216804889-57895446-d4f9-4bc6-b264-97e38409fb84.png)
 
 And the generated layout is,
 
-![image](https://user-images.githubusercontent.com/123365842/216804756-6e2bcbae-9f77-4f33-82cf-a6066c5da0e2.png)
+![image](https://user-images.githubusercontent.com/123365842/216804883-b98a8c47-6095-4669-8b63-5209c81748ca.png)
 
 
 
