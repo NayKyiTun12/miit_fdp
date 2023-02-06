@@ -2454,13 +2454,13 @@ As it parameters are set, we are ready to extract the 'LEF' file from the "mag" 
 
 Now we can see this file in the vsdstdcellsdesign folder.
 
-![image](https://user-images.githubusercontent.com/123365842/216803238-a2def234-8928-4463-9199-cd36769034aa.png)
+![image](https://user-images.githubusercontent.com/123365842/216886477-04e3340c-9094-4d40-93e8-9b4c29bbfee1.png)
 
 Now, we open this file in the magic by using comand "magic -T sky130A.tech sky130_vsdinv.mag &".
 
 Now to extract the lef file we have to write the comand in the tckon window "lef write". so it will create a lef file and we can check it in the vsdstdcellsdesign folder.
 
-![image](https://user-images.githubusercontent.com/123365842/216859287-641c5a78-4235-4c8f-8407-0c5a1756953e.png)
+![image](https://user-images.githubusercontent.com/123365842/216886088-63ad921a-56e9-4d00-830e-30e73ef8bee8.png)
 
 Now, lef file is created and now next step is plug this lef file in picorv32a. before that we move our files to src folder where all the design files are available at one location.
 
