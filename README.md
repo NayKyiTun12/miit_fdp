@@ -2460,7 +2460,7 @@ Now, we open this file in the magic by using comand "magic -T sky130A.tech sky13
 
 Now to extract the lef file we have to write the comand in the tckon window "lef write". so it will create a lef file and we can check it in the vsdstdcellsdesign folder.
 
-![image](https://user-images.githubusercontent.com/123365842/216803341-f874296f-cc70-48c9-a5b7-5799c510c485.png)
+![image](https://user-images.githubusercontent.com/123365842/216859287-641c5a78-4235-4c8f-8407-0c5a1756953e.png)
 
 Now, lef file is created and now next step is plug this lef file in picorv32a. before that we move our files to src folder where all the design files are available at one location.
 
@@ -2800,11 +2800,9 @@ command: "report_checks -path_delay min_max -format full_clock_expanded -digits 
 
 so after running this we can see that the slack is positive for hold and setup both. and also we can notice the data required time and data arroval time also.
 
-So, the Hold slack = 1.6982nsec because here we can see that (arrivel time) >(required time).
+So, the Hold slack = 1.4776nsec because here we can see that (arrivel time) >(required time).
 
 ![image](https://user-images.githubusercontent.com/123365842/216839090-73f8a6d4-5781-4e8f-a161-f8e9a8660bcf.png)
-
-NOw setup slack = 0.9457nsec because here we can see that (required time)>(arrival time).
 
 # Lab steps to execute openSTA with right timing libraries and CTS assignment
 
@@ -2826,7 +2824,7 @@ set_propagated_clock [all_clocks]
 
 report_checks -path_delay min_max -format full_clock_expanded -digits 4
 
-slack for typical coirner= 0.2429nsec
+slack for typical coirner= 0.1075nsec
 
 ![image](https://user-images.githubusercontent.com/123365842/216839124-f70f3538-67e0-40f7-993e-1f60f2bfce69.png)
 
