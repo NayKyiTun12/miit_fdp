@@ -2800,7 +2800,7 @@ command: "report_checks -path_delay min_max -format full_clock_expanded -digits 
 
 so after running this we can see that the slack is positive for hold and setup both. and also we can notice the data required time and data arroval time also.
 
-So, the Hold slack = 1.4776nsec because here we can see that (arrivel time) >(required time).
+So, the Hold slack = 1.4336nsec because here we can see that (arrivel time) >(required time).
 
 ![image](https://user-images.githubusercontent.com/123365842/216839090-73f8a6d4-5781-4e8f-a161-f8e9a8660bcf.png)
 
